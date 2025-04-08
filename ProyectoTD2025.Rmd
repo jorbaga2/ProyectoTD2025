@@ -1,0 +1,69 @@
+---
+title: "ProyectoTD2025"
+author: "Jorge Ballesteros García, Emma Almenar García, Miguel Angel Aloy Poveda, Ainhoa
+  Larios Bea, Samuel Lozada Borrás, Iker Martínez Bravo"
+date: "2025-04-07"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+Instalación de las librerías.
+
+```{r}
+install.packages("pdftools")
+
+
+```
+
+Importación de las librerías:
+
+```{r}
+
+library(pdftools)
+library(dplyr)
+library(stringr)
+
+```
+
+
+Lectura de un solo fichero pdf de prueba
+
+```{r}
+f_prueba<-"data/20231125 Mercadona 37,76 €.pdf"
+
+t_pdf<- pdf_text(f_prueba) #Extrae el texto del pdf
+t_pdf
+
+lineas<- strsplit(t_pdf, "\n") #Utilizamos strsplit() que nos devuelve una lista donde cada elemento es el resltado de dividir la cadena/linea. Utilizamos el salto de línea como separador.
+
+lineas
+
+
+```
+
+
+Inspección de los tickets.
+
+```{r}
+#Listar todos los archivos PDF presentes en la carpeta 'data'.
+
+archivos<- list.files(path = 'data', pattern = '\\.pdf$', full.names = TRUE)
+
+#Creamos una dataframe vacío en el que vamos a ir añadiendo los datos del encabezado.
+
+encabezado_pdf<- data.frame(
+  Nombre_supermercado = character(),
+  Direccion = character()
+  
+)
+
+
+
+```
+
+
