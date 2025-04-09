@@ -38,6 +38,8 @@ Vamos a crear una función que procese un ticket individual
 f_prueba<-"data/20231125 Mercadona 37,76 €.pdf"
 
 
+#Función para extraer toda la información de un ticket de Mercadona.
+
 procesar_ticket<- function(archivo) {
   texto<-  pdf_text(archivo)
   
@@ -61,6 +63,7 @@ procesar_ticket<- function(archivo) {
     hora = NA,
     op = NA,
     factura_simplificada = NA,
+    
     #Creamos dentro de la lista para almacenar los datos, un dataframe que va a contener los productos del ticket.
     
     productos = data.frame(
@@ -77,8 +80,9 @@ procesar_ticket<- function(archivo) {
     tarjeta = NA
   )
   
-  
-  
+  #Procesar encabezado
+  datos$supermercado<- lineas[1]
+  datos$supermercado
 }
 
 
