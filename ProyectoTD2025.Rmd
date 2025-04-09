@@ -40,8 +40,42 @@ f_prueba<-"data/20231125 Mercadona 37,76 €.pdf"
 
 procesar_ticket<- function(archivo) {
   texto<-  pdf_text(archivo)
+  
+    #Utilizamos strsplit() que nos devuelve una lista donde cada elemento es el resltado de dividir la cadena/linea. Utilizamos el salto de línea como separador.Y utilizamos unlist para simplificar una lista a un vector. 
+  
   lineas<- unlist(strsplit(t_pdf, "\n"))
-  #Utilizamos strsplit() que nos devuelve una lista donde cada elemento es el resltado de dividir la cadena/linea. Utilizamos el salto de línea como separador.Y utilizamos unlist para simplificar una lista a un vector. 
+  
+  #Eliminar espacios en blanco al inicio y final de cada línea
+
+  lineas<- trimws(lineas)
+  
+  #Inicializamos una lista para almacenar datos. Esta lista incluye los datos de tanto el encabezado, como los productos
+  
+  datos<-list(
+    supermercado = NA,
+    direccion = NA,
+    cp = NA,
+    localidad = NA,
+    telefono = NA,
+    fecha = NA,
+    hora = NA,
+    op = NA,
+    factura_simplificada = NA,
+    #Creamos dentro de la lista para almacenar los datos, un dataframe que va a contener los productos del ticket.
+    
+    productos = data.frame(
+      cantidad = numeric(),
+      descripcion = character(),
+      importe = numeric(),
+      stringsAsFactors = FALSE
+    ),
+    parking = FALSE,
+    hora_entrada_parking = NA,
+    hora_salida_parking = NA,
+    donacion = NA,
+    metodo_pago = NA,
+    tarjeta = NA
+  )
   
   
   
