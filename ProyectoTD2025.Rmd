@@ -91,10 +91,16 @@ procesar_ticket<- function(archivo) {
   datos$direccion
   
   #Extraer CP y localidad (ejemplo: "04630 GARRUCHA")
-  localidad_cp<- lineas[3]
+  
+  localidad_cp<- trimws(lineas[3]) #Usamos trimws para asegurarnos de eliminar los espacios en blanco anteriores al CP.
   localidad_cp #CP y localidad juntos
-  datos$cp<- gsub("([0-9]+).*", "\\1", localidad_cp)
+  
+  datos$cp<- gsub("([0-9]+).*", "\\1", localidad_cp) #Extraemos solo el CP.
   datos$cp
+  
+  datos$localidad<- gsub("[0-9]+ (.*)", "\\1", localidad_cp) #Extraemos solo la localidad
+  
+  datos$localidad
   
   
 }
