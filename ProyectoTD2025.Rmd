@@ -80,9 +80,23 @@ procesar_ticket<- function(archivo) {
     tarjeta = NA
   )
   
-  #Procesar encabezado
+  #Procesar encabezado:
+  
+  #Extraer el supermercado
   datos$supermercado<- lineas[1]
   datos$supermercado
+  
+  #Extraer la dirección
+  datos$direccion<- lineas[2]
+  datos$direccion
+  
+  #Extraer CP y localidad (ejemplo: "04630 GARRUCHA")
+  localidad_cp<- lineas[3]
+  localidad_cp #CP y localidad juntos
+  datos$cp<- gsub("([0-9]+).*", "\\1", localidad_cp)
+  datos$cp
+  
+  
 }
 
 
