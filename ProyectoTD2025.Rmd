@@ -83,11 +83,11 @@ procesar_ticket<- function(archivo) {
   #Procesar encabezado:
   
   #Extraer el supermercado
-  datos$supermercado<- lineas[1]
+  datos$supermercado<- trimws(lineas[1])
   datos$supermercado
   
   #Extraer la dirección
-  datos$direccion<- lineas[2]
+  datos$direccion<- trimws(lineas[2])
   datos$direccion
   
   #Extraer CP y localidad (ejemplo: "04630 GARRUCHA")
@@ -102,6 +102,20 @@ procesar_ticket<- function(archivo) {
   
   datos$localidad
   
+  #Extraer teléfono
+  telefono_linea<-lineas[4]
+  datos$telefono<- gsub(".*TELÉFONO: (.*)", "\\1", telefono_linea)
+  datos$telefono
+  
+  #Extraer fecha, hora y OP
+  fecha_hora_linea<- trimws(lineas[5]) # 25/11/2023 09:09 OP: 78800
+  partes<-unlist(strsplit(fecha_hora_linea, " ")) #Separamos los elementos por espacios
+  datos$fecha<-partes[1]
+  datos$fecha
+  datos$hora<- partes[2]
+  datos$hora
+  datos$op<- paste(partes[3],partes[4]) #Unimos los dos elementos en una cadena ("OP: 78800")
+  datos$op
   
 }
 
