@@ -82,7 +82,11 @@ procesar_lineas <- function(lineas) {
     hora_salida_parking = NA,
     donacion = NA,
     metodo_pago = NA,
-    tarjeta = NA
+    tarjeta = NA,
+    subtotal = NA,
+    descuento = NA,
+    IVA = NA,
+    importe_total = NA
   )
   
   
@@ -129,6 +133,72 @@ procesar_lineas <- function(lineas) {
   componentes_factura_simplificada <- unlist(strsplit(linea_factura_simplificada, "-"))
   datos$num_tienda <- componentes_factura_simplificada[1] 
   datos$factura_numero <- componentes_factura_simplificada[3]
+  
+  
+  #Extraer IVA y subtotal
+  linea_total_iva <- grep("^TOTAL\\s+[0-9.,]+\\s+[0-9.,]+$", lineas, value = TRUE)
+  if (length(linea_total_iva) > 0) {
+    partes <- unlist(strsplit(gsub(",", ".", linea_total_iva[1]), "\\s+"))
+    datos$subtotal <- as.numeric(partes[2])
+    datos$IVA <- as.numeric(partes[3])
+  } else {
+    datos$subtotal <- NA
+    datos$IVA <- NA
+  }
+  
+  #Extraer importe total
+  linea_total <- grep("TOTAL \\(€\\)", lineas, value = TRUE)[1]
+  if (!is.na(linea_total)) {
+    datos$importe_total <- as.numeric(gsub(",", ".", gsub(".*TOTAL \\(€\\)\\s*([0-9.,]+).*", "\\1", linea_total)))
+  } else {
+    datos$importe_total <- NA
+  }
+  
+  #Extraer descuento
+  linea_descuento <- grep("DESCUENTO|DTO", lineas, value = TRUE, ignore.case = TRUE)
+  if (length(linea_descuento) > 0) {
+    datos$descuento <- as.numeric(gsub(",", ".", gsub(".*([0-9]+,[0-9]{2}).*", "\\1", linea_descuento[1])))
+  } else {
+    datos$descuento <- NA
+  }
+  
+  #Extraer donación
+  linea_donacion <- grep("DONACIÓN", lineas, value = TRUE)
+  if (length(linea_donacion) > 0) {
+    datos$donacion <- as.numeric(gsub(",", ".", gsub(".*DONACIÓN:\\s*([0-9.,]+).*", "\\1", linea_donacion[1])))
+  } else {
+    datos$donacion <- NA
+  }
+  
+  #Extraer parking (hora entrada y salida si hay)
+  linea_parking <- grep("PARKING", lineas, value = TRUE)
+  if (length(linea_parking) > 0) {
+    datos$parking <- TRUE
+    datos$hora_entrada_parking <- gsub(".*ENTRADA:\\s*([0-9:]+).*", "\\1", linea_parking)
+    datos$hora_salida_parking <- gsub(".*SALIDA:\\s*([0-9:]+).*", "\\1", linea_parking)
+  } else {
+    datos$parking <- FALSE
+  }
+  
+  #Extraer método de pago
+  linea_pago <- grep("TARJETA|MASTERCARD|EFECTIVO|DEBIT", lineas, value = TRUE, ignore.case = TRUE)
+  if (length(linea_pago) > 0) {
+    metodo <- grep("MASTERCARD|VISA|EFECTIVO|DEBIT|TARJETA", linea_pago, value = TRUE, ignore.case = TRUE)
+    if (length(metodo) > 0) {
+      datos$metodo_pago <- toupper(gsub(".*(MASTERCARD|VISA|DEBIT|EFECTIVO|TARJETA).*", "\\1", metodo[1]))
+    } else {
+      datos$metodo_pago <- NA
+    }
+  }
+  
+  #Extraer tarjeta
+  linea_tarjeta <- grep("TARJ. BANCARIA", lineas, value = TRUE)
+  if (length(linea_tarjeta) > 0) {
+    datos$tarjeta <- gsub(".*\\*+\\s*([0-9]{4}).*", "\\1", linea_tarjeta[1])
+  } else {
+    datos$tarjeta <- NA
+  }
+    
   
   return(datos)
   
