@@ -34,22 +34,16 @@ Vamos a crear una función que procese un ticket individual
 
 
 ```{r}
-#Utilizaremos este fichero de prueba para probar la función de procesamiento.
-f_prueba<-"data/20231125 Mercadona 37,76 €.pdf"
 
+# Función para leer PDF y convertir en líneas de texto procesadas
+leer_pdf <- function(archivo) {
+  texto <- pdf_text(archivo)
+  lineas <- unlist(strsplit(paste(texto, collapse = "\n"), "\n"))
+  trimws(lineas)
+}
 
-#Función para extraer toda la información de un ticket de Mercadona.
-
-procesar_ticket<- function(archivo) {
-  texto<-  pdf_text(archivo)
-  
-    #Utilizamos strsplit() que nos devuelve una lista donde cada elemento es el resltado de dividir la cadena/linea. Utilizamos el salto de línea como separador.Y utilizamos unlist para simplificar una lista a un vector. 
-  
-  lineas<- unlist(strsplit(t_pdf, "\n"))
-  
-  #Eliminar espacios en blanco al inicio y final de cada línea
-
-  lineas<- trimws(lineas)
+# Función para procesar las líneas y extraer información
+procesar_lineas <- function(lineas) {
   
   #Inicializamos una lista para almacenar datos. Esta lista incluye los datos de tanto el encabezado, como los productos
   
@@ -79,6 +73,7 @@ procesar_ticket<- function(archivo) {
     metodo_pago = NA,
     tarjeta = NA
   )
+  
   
   #Procesar encabezado:
   
@@ -117,7 +112,18 @@ procesar_ticket<- function(archivo) {
   datos$op<- paste(partes[3],partes[4]) #Unimos los dos elementos en una cadena ("OP: 78800")
   datos$op
   
+  return(datos)
+  
 }
+
+#Utilizaremos este fichero de prueba para probar la función de procesamiento.
+f_prueba<-"data/20231125 Mercadona 37,76 €.pdf"
+
+lineas<- leer_pdf(f_prueba)
+
+datos<- procesar_lineas(lineas)
+
+print(datos)
 
 
 
