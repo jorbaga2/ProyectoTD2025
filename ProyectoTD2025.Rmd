@@ -156,6 +156,18 @@ procesar_lineas <- function(lineas) {
    return(NULL)
   }
   
+  # Función para extraer productos a peso (por ejemplo, peso y precio por kilo)
+  extraer_producto_peso <- function(linea_actual, linea_siguiente) {
+    match_peso <- str_match(linea_siguiente, "([0-9.,]+)\\s*kg\\s+([0-9.,]+)\\s*€/kg\\s+([0-9.,]+)")
+    if (!is.na(match_peso[1,1])) {
+     cantidad <- 1
+      descripcion <- paste(trimws(linea_actual), trimws(linea_siguiente))
+      importe <- as.numeric(gsub(",", ".", match_peso[1,4]))
+      return(data.frame(cantidad = cantidad, descripcion = descripcion, importe = importe, stringsAsFactors = FALSE))
+   }
+    return(NULL)
+  }
+  
   #Extraer IVA y subtotal
   linea_total_iva <- grep("^TOTAL\\s+[0-9.,]+\\s+[0-9.,]+$", lineas, value = TRUE)
   if (length(linea_total_iva) > 0) {
