@@ -42,8 +42,19 @@ leer_pdf <- function(archivo) {
   trimws(lineas)
 }
 
+
+#Función que busca "MERCADONA" en mayúsculas.
+es_mercadona <- function(lineas) {
+  if(length(lineas) == 0) return(FALSE)
+  any(grepl("^MERCADONA\\b", lineas))  # ^ indica inicio de línea, \b para palabra completa
+}
+
 # Función para procesar las líneas y extraer información
 procesar_lineas <- function(lineas) {
+  if(!es_mercadona(lineas)) {
+    message("El texto no corresponde a un ticket de Mercadona")
+    return(NULL)
+  }
   
 #Inicializamos una lista para almacenar datos. Esta lista incluye los datos de tanto el encabezado, como los productos
   
