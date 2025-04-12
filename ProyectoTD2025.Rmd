@@ -134,6 +134,10 @@ procesar_lineas <- function(lineas) {
   datos$num_tienda <- componentes_factura_simplificada[1] 
   datos$factura_numero <- componentes_factura_simplificada[3]
   
+    # Función para buscar la línea de inicio de los productos
+  buscar_inicio_productos <- function(lineas) {
+  return(grep("^\\s*Descripción\\s+P\\. Unit\\s+Importe", lineas))
+  }
   
   #Extraer IVA y subtotal
   linea_total_iva <- grep("^TOTAL\\s+[0-9.,]+\\s+[0-9.,]+$", lineas, value = TRUE)
