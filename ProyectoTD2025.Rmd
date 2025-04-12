@@ -136,7 +136,12 @@ procesar_lineas <- function(lineas) {
   
     # Función para buscar la línea de inicio de los productos
   buscar_inicio_productos <- function(lineas) {
-  return(grep("^\\s*Descripción\\s+P\\. Unit\\s+Importe", lineas))
+    return(grep("^\\s*Descripción\\s+P\\. Unit\\s+Importe", lineas))
+  }
+  
+  # Función para buscar la línea de fin de los productos
+  buscar_fin_productos <- function(lineas) {
+    return(grep("^\\s*TOTAL \\(€\\)", lineas)[1] - 1)
   }
   
   #Extraer IVA y subtotal
