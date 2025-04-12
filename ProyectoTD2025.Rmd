@@ -116,8 +116,6 @@ procesar_lineas <- function(lineas) {
   linea_factura_simplificada <- linea[6]
   factura_simpliifcada <- trimws(gsub("FACTURA SIMPLIFICADA:", "", linea_factura_simplificada))  
   componentes_factura_simplificada <- unlist(strsplit(factura_simplificada, "-"))
-  
-  # Asignar a la lista 'datos'
   datos$num_tienda <- componentes_factura_simplificada[1] 
   datos$factura_numero <- componentes_factura_simplificada[3]
   
