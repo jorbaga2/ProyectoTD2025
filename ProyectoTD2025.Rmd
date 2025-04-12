@@ -45,7 +45,7 @@ leer_pdf <- function(archivo) {
 # Función para procesar las líneas y extraer información
 procesar_lineas <- function(lineas) {
   
-  #Inicializamos una lista para almacenar datos. Esta lista incluye los datos de tanto el encabezado, como los productos
+#Inicializamos una lista para almacenar datos. Esta lista incluye los datos de tanto el encabezado, como los productos
   
   datos<-list(
     supermercado = NA,
@@ -58,7 +58,7 @@ procesar_lineas <- function(lineas) {
     op = NA,
     factura_simplificada = NA,
     
-    #Creamos dentro de la lista para almacenar los datos, un dataframe que va a contener los productos del ticket.
+#Creamos dentro de la lista para almacenar los datos, un dataframe que va a contener los productos del ticket.
     
     productos = data.frame(
       cantidad = numeric(),
@@ -111,6 +111,15 @@ procesar_lineas <- function(lineas) {
   datos$hora
   datos$op<- paste(partes[3],partes[4]) #Unimos los dos elementos en una cadena ("OP: 78800")
   datos$op
+  
+  #Extraer de la factura simplificada el código del ticket y el código del supermercado
+  linea_factura_simplificada <- linea[6]
+  factura_simpliifcada <- trimws(gsub("FACTURA SIMPLIFICADA:", "", linea_factura_simplificada))  
+  componentes_factura_simplificada <- unlist(strsplit(factura_simplificada, "-"))
+  
+  # Asignar a la lista 'datos'
+  datos$num_tienda <- componentes_factura_simplificada[1] 
+  datos$factura_numero <- componentes_factura_simplificada[3]
   
   return(datos)
   
