@@ -168,6 +168,50 @@ procesar_lineas <- function(lineas) {
     return(NULL)
   }
   
+  # Función para procesar productos y agregar datos
+  procesar_productos <- function(lineas) {
+    linea_inicio_productos <- buscar_inicio_productos(lineas)
+    if (length(linea_inicio_productos) > 0) {
+     inicio <- linea_inicio_productos + 1
+      fin <- buscar_fin_productos(lineas)
+
+      if (!is.na(fin) && inicio < fin) {
+        productos_brutos <- lineas[inicio:fin]
+        i <- 1
+        productos <- data.frame(cantidad = numeric(), descripcion = character(), importe = numeric(), stringsAsFactors = FALSE)
+
+        while (i <= length(productos_brutos)) {
+          linea <- productos_brutos[i]
+        
+         # Intentamos extraer el producto normal
+          producto <- extraer_producto(linea)
+          if (!is.null(producto)) {
+            productos <- rbind(productos, producto)
+            i <- i + 1
+          } else {
+            # Intentamos extraer un producto a peso si no es normal
+            if (i < length(productos_brutos)) {
+              linea_actual <- productos_brutos[i]
+              linea_siguiente <- productos_brutos[i + 1]
+
+             producto_peso <- extraer_producto_peso(linea_actual, linea_siguiente)
+              if (!is.null(producto_peso)) {
+                productos <- rbind(productos, producto_peso)
+                i <- i + 2  # saltamos 2 líneas
+              } else {
+              i <- i + 1
+              }
+            } else {
+              i <- i + 1
+            }
+          }
+        }
+        return(productos)
+      }
+    }
+    return(NULL)
+  }
+  
   #Extraer IVA y subtotal
   linea_total_iva <- grep("^TOTAL\\s+[0-9.,]+\\s+[0-9.,]+$", lineas, value = TRUE)
   if (length(linea_total_iva) > 0) {
