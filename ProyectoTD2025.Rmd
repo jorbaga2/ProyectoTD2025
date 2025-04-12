@@ -212,6 +212,12 @@ procesar_lineas <- function(lineas) {
     return(NULL)
   }
   
+  # Llamamos a procesar_productos para extraer los productos del ticket
+  productos_extraidos <- procesar_productos(lineas)
+  if (!is.null(productos_extraidos)) {
+    datos$productos <- productos_extraidos  # Asignamos los productos al dataframe dentro de datos
+  }  
+
   #Extraer IVA y subtotal
   linea_total_iva <- grep("^TOTAL\\s+[0-9.,]+\\s+[0-9.,]+$", lineas, value = TRUE)
   if (length(linea_total_iva) > 0) {
