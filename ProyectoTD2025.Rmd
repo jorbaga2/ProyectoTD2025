@@ -42,8 +42,19 @@ leer_pdf <- function(archivo) {
   trimws(lineas)
 }
 
+
+#Función que busca "MERCADONA" en mayúsculas.
+es_mercadona <- function(lineas) {
+  if(length(lineas) == 0) return(FALSE)
+  any(grepl("^MERCADONA\\b", lineas))  # ^ indica inicio de línea, \b para palabra completa
+}
+
 # Función para procesar las líneas y extraer información
 procesar_lineas <- function(lineas) {
+  if(!es_mercadona(lineas)) {
+    message("El texto no corresponde a un ticket de Mercadona")
+    return(NULL)
+  }
   
 #Inicializamos una lista para almacenar datos. Esta lista incluye los datos de tanto el encabezado, como los productos
   
@@ -113,9 +124,9 @@ procesar_lineas <- function(lineas) {
   datos$op
   
   #Extraer de la factura simplificada el código del ticket y el código del supermercado
-  linea_factura_simplificada <- linea[6]
-  factura_simpliifcada <- trimws(gsub("FACTURA SIMPLIFICADA:", "", linea_factura_simplificada))  
-  componentes_factura_simplificada <- unlist(strsplit(factura_simplificada, "-"))
+  linea_factura_simplificada <- lineas[6]
+  factura_simplifcada <- trimws(gsub("FACTURA SIMPLIFICADA:", "", linea_factura_simplificada))  
+  componentes_factura_simplificada <- unlist(strsplit(linea_factura_simplificada, "-"))
   datos$num_tienda <- componentes_factura_simplificada[1] 
   datos$factura_numero <- componentes_factura_simplificada[3]
   
@@ -124,7 +135,10 @@ procesar_lineas <- function(lineas) {
 }
 
 #Utilizaremos este fichero de prueba para probar la función de procesamiento.
-f_prueba<-"data/20231125 Mercadona 37,76 €.pdf"
+
+#f_prueba<-"data/20231125 Mercadona 37,76 €.pdf"
+
+f_prueba<- "data/ticket_dia_30_10_2024_11_56.pdf"
 
 lineas<- leer_pdf(f_prueba)
 
