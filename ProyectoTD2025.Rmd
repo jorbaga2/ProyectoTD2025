@@ -312,23 +312,6 @@ if (length(linea_parking) > 0) {
   
 }
 
-#Utilizaremos este fichero de prueba para probar la función de procesamiento.
-
-f_prueba<-"data/20231125 Mercadona 37,76 €.pdf"
-
-<<<<<<< HEAD
-f_prueba<- "Data/20231201 Mercadona 86,70.pdf"
-=======
-#f_prueba<- "data/ticket_dia_30_10_2024_11_56.pdf"
->>>>>>> 6d6d473035d7d6c22efd1ee4beb3ac73ed04a5a5
-
-lineas<- leer_pdf(f_prueba)
-
-datos<- procesar_lineas(lineas)
-print(datos)
-
-
-
 
 ```
 
