@@ -348,9 +348,8 @@ procesar_tickets <- function(directorio = "data") {
 todos_los_tickets <- procesar_tickets()
 
 # Ver el primer ticket
-print(todos_los_tickets[[1]])
+print(todos_los_tickets[[4]])
 
-str(todos_los_tickets[[1]], max.level = 2)
 
 ```
 
