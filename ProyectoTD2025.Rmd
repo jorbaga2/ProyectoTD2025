@@ -129,9 +129,10 @@ procesar_lineas <- function(lineas) {
   
   #Extraer de la factura simplificada el código del ticket y el código del supermercado
   linea_factura_simplificada <- lineas[6]
-  datos$factura_simplifcada <- trimws(gsub("FACTURA SIMPLIFICADA:", "", linea_factura_simplificada))  
+  datos$factura_simplificada <- trimws(gsub("FACTURA SIMPLIFICADA:", "", linea_factura_simplificada))  
   componentes_factura_simplificada <- unlist(strsplit(linea_factura_simplificada, "-"))
   datos$num_tienda <- componentes_factura_simplificada[1] 
+  datos$num_caja<- componentes_factura_simplificada[2] 
   datos$factura_numero <- componentes_factura_simplificada[3]
   
     # Función para buscar la línea de inicio de los productos
