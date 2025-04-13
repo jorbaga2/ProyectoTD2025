@@ -350,7 +350,7 @@ todos_los_tickets <- procesar_tickets()
 # Ver el primer ticket
 print(todos_los_tickets[[1]])
 
-
+str(todos_los_tickets[[1]], max.level = 2)
 
 ```
 
