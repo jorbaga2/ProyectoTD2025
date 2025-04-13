@@ -255,14 +255,23 @@ procesar_lineas <- function(lineas) {
   }
   
   #Extraer parking (hora entrada y salida si hay)
-  linea_parking <- grep("PARKING", lineas, value = TRUE)
-  if (length(linea_parking) > 0) {
-    datos$parking <- TRUE
-    datos$hora_entrada_parking <- gsub(".*ENTRADA:\\s*([0-9:]+).*", "\\1", linea_parking)
-    datos$hora_salida_parking <- gsub(".*SALIDA:\\s*([0-9:]+).*", "\\1", linea_parking)
-  } else {
-    datos$parking <- FALSE
+  linea_parking <- grep("PARKING", lineas)
+if (length(linea_parking) > 0) {
+  datos$parking <- TRUE
+  # Buscar la línea siguiente que contenga ENTRADA y SALIDA
+  for (i in seq_along(linea_parking)) {
+    idx <- linea_parking[i] + 1
+    if (idx <= length(lineas)) {
+      linea_horas <- lineas[idx]
+      if (grepl("ENTRADA", linea_horas) && grepl("SALIDA", linea_horas)) {
+        datos$hora_entrada_parking <- gsub(".*ENTRADA\\s+([0-9:]{4,5}).*", "\\1", linea_horas)
+        datos$hora_salida_parking <- gsub(".*SALIDA\\s+([0-9:]{4,5}).*", "\\1", linea_horas)
+        break}
+    }
   }
+} else {
+  datos$parking <- FALSE
+}
   
   #Extraer método de pago
   linea_pago <- grep("TARJETA|MASTERCARD|EFECTIVO|DEBIT", lineas, value = TRUE, ignore.case = TRUE)
