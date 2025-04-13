@@ -317,6 +317,7 @@ procesar_tickets <- function(directorio = "data") {
   # Inicializar lista para almacenar resultados
   lista_tickets <- list()
   
+  c<- 1
   # Procesar cada archivo
   for (i in seq_along(archivos)) {
     archivo <- archivos[i]
@@ -325,16 +326,21 @@ procesar_tickets <- function(directorio = "data") {
   tryCatch({
       # Leer y procesar el PDF
       lineas <- leer_pdf(archivo)
-      datos_ticket <- procesar_lineas(lineas)
+      if (es_mercadona(lineas)){
+        
+        datos_ticket <- procesar_lineas(lineas)
       
-      # Agregar nombre del archivo a los datos
-      datos_ticket$archivo <- basename(archivo)
-      
-      # Almacenar en la lista
-      lista_tickets[[i]] <- datos_ticket
+        # Agregar nombre del archivo a los datos
+        datos_ticket$archivo <- basename(archivo)
+        
+        # Almacenar en la lista
+        lista_tickets[[c]] <- datos_ticket
+        c <- c+1
+        
+      }
     }, error = function(e) {
       warning("Error al procesar el archivo ", basename(archivo), ": ", e$message)
-      lista_tickets[[i]] <- NULL
+      #lista_tickets[[i]] <- NULL
     })
   }
   
@@ -347,8 +353,17 @@ procesar_tickets <- function(directorio = "data") {
 # Procesar todos los tickets en la carpeta data
 todos_los_tickets <- procesar_tickets()
 
-# Ver el primer ticket
-print(todos_los_tickets[[4]])
+# Vemos los tres primeros tickets procesados correctamente (aquellos pdfs de Mercadona con formato texto)
+print(todos_los_tickets[[1]])
+
+print(todos_los_tickets[[2]])
+
+print(todos_los_tickets[[3]])
+
+
+
+# Ver cuántos tickets se procesaron correctamente
+length(todos_los_tickets) #Se procesan correctamente 306
 
 
 ```
