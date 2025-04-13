@@ -156,17 +156,27 @@ procesar_lineas <- function(lineas) {
    return(NULL)
   }
   
-  # Función para extraer productos a peso (por ejemplo, peso y precio por kilo)
-  extraer_producto_peso <- function(linea_actual, linea_siguiente) {
-    match_peso <- str_match(linea_siguiente, "([0-9.,]+)\\s*kg\\s+([0-9.,]+)\\s*€/kg\\s+([0-9.,]+)")
-    if (!is.na(match_peso[1,1])) {
-     cantidad <- 1
-      descripcion <- paste(trimws(linea_actual), trimws(linea_siguiente))
-      importe <- as.numeric(gsub(",", ".", match_peso[1,4]))
-      return(data.frame(cantidad = cantidad, descripcion = descripcion, importe = importe, stringsAsFactors = FALSE))
-   }
-    return(NULL)
+  # Función para extraer productos normales (cantidad, descripción, [precio_unitario], importe)
+  extraer_producto <- function(linea) {
+  # Caso con precio_unitario y total
+  match_con_unitario <- str_match(linea, "^\\s*(\\d+(?:[.,]\\d+)?)\\s+(.*?)\\s+(\\d+[.,]\\d+)\\s+(\\d+[.,]\\d+)$")
+  if (!is.na(match_con_unitario[1,1])) {
+    cantidad <- as.numeric(gsub(",", ".", match_con_unitario[1,2]))
+    descripcion <- trimws(match_con_unitario[1,3])
+    precio_unitario <- as.numeric(gsub(",", ".", match_con_unitario[1,4]))
+    importe <- as.numeric(gsub(",", ".", match_con_unitario[1,5]))
+    return(data.frame(cantidad = cantidad, descripcion = descripcion, precio_unitario = precio_unitario, importe = importe, stringsAsFactors = FALSE))
   }
+
+  # Caso sin precio_unitario
+  match_simple <- str_match(linea, "^\\s*(\\d+(?:[.,]\\d+)?)\\s+(.*?)\\s+(\\d+[.,]\\d+)$")
+  if (!is.na(match_simple[1,1])) {
+    cantidad <- as.numeric(gsub(",", ".", match_simple[1,2]))
+    descripcion <- trimws(match_simple[1,3])
+    importe <- as.numeric(gsub(",", ".", match_simple[1,4]))
+    return(data.frame(cantidad = cantidad, descripcion = descripcion, precio_unitario = NA, importe = importe, stringsAsFactors = FALSE))
+  }
+
   
   # Función para procesar productos y agregar datos
   procesar_productos <- function(lineas) {
@@ -212,6 +222,22 @@ procesar_lineas <- function(lineas) {
     return(NULL)
   }
   
+  # Función extraer_producto_peso
+  extraer_producto_peso <- function(linea_actual, linea_siguiente) {
+    match_peso <- str_match(linea_siguiente, "([0-9.,]+)\\s*kg\\s+([0-9.,]+)\\s*€/kg\\s+([0-9.,]+)")
+   if (!is.na(match_peso[1,1])) {
+     cantidad <- 1
+     descripcion <- trimws(linea_actual)
+      peso <- gsub(",", ".", match_peso[1,2])
+      precio_kg <- gsub(",", ".", match_peso[1,3])
+      importe <- gsub(",", ".", match_peso[1,4])
+      descripcion_completa <- paste0(descripcion, " (", peso, " kg a ", precio_kg, " €/kg)")
+      return(data.frame(cantidad = cantidad, descripcion = descripcion_completa, precio_unitario = as.numeric(precio_kg), importe = as.numeric(importe), stringsAsFactors = FALSE))
+    }
+    return(NULL)
+  }
+
+
   # Llamamos a procesar_productos para extraer los productos del ticket
   productos_extraidos <- procesar_productos(lineas)
   if (!is.null(productos_extraidos)) {
@@ -296,7 +322,6 @@ f_prueba<- "data/ticket_dia_30_10_2024_11_56.pdf"
 lineas<- leer_pdf(f_prueba)
 
 datos<- procesar_lineas(lineas)
-
 print(datos)
 
 
