@@ -129,7 +129,7 @@ procesar_lineas <- function(lineas) {
   
   #Extraer de la factura simplificada el código del ticket y el código del supermercado
   linea_factura_simplificada <- lineas[6]
-  factura_simplifcada <- trimws(gsub("FACTURA SIMPLIFICADA:", "", linea_factura_simplificada))  
+  datos$factura_simplifcada <- trimws(gsub("FACTURA SIMPLIFICADA:", "", linea_factura_simplificada))  
   componentes_factura_simplificada <- unlist(strsplit(linea_factura_simplificada, "-"))
   datos$num_tienda <- componentes_factura_simplificada[1] 
   datos$factura_numero <- componentes_factura_simplificada[3]
@@ -289,9 +289,9 @@ procesar_lineas <- function(lineas) {
 
 #Utilizaremos este fichero de prueba para probar la función de procesamiento.
 
-#f_prueba<-"data/20231125 Mercadona 37,76 €.pdf"
+f_prueba<-"data/20231125 Mercadona 37,76 €.pdf"
 
-f_prueba<- "data/ticket_dia_30_10_2024_11_56.pdf"
+#f_prueba<- "data/ticket_dia_30_10_2024_11_56.pdf"
 
 lineas<- leer_pdf(f_prueba)
 
@@ -304,21 +304,48 @@ print(datos)
 
 ```
 
-
-Inspección de los tickets.
+Creamos una función para procesar todos los tickets.
 
 ```{r}
-#Listar todos los archivos PDF presentes en la carpeta 'data'.
+#Función para procesar múltiples tickets PDF.
 
-archivos<- list.files(path = 'data', pattern = '\\.pdf$', full.names = TRUE)
-
-#Creamos una dataframe vacío en el que vamos a ir añadiendo los datos del encabezado.
-
-encabezado_pdf<- data.frame(
-  Nombre_supermercado = character(),
-  Direccion = character()
+procesar_tickets <- function(directorio = "data") {
   
-)
+  # Listar todos los archivos PDF en el directorio
+  archivos <- list.files(path = directorio, pattern = "\\.pdf$", full.names = TRUE)
+  
+  # Inicializar lista para almacenar resultados
+  lista_tickets <- list()
+  
+  # Procesar cada archivo
+  for (i in seq_along(archivos)) {
+    archivo <- archivos[i]
+    cat("Procesando:", basename(archivo), "...\n")
+  
+  tryCatch({
+      # Leer y procesar el PDF
+      lineas <- leer_pdf(archivo)
+      datos_ticket <- procesar_lineas(lineas)
+      
+      # Agregar nombre del archivo a los datos
+      datos_ticket$archivo <- basename(archivo)
+      
+      # Almacenar en la lista
+      lista_tickets[[i]] <- datos_ticket
+    }, error = function(e) {
+      warning("Error al procesar el archivo ", basename(archivo), ": ", e$message)
+      lista_tickets[[i]] <- NULL
+    })
+  }
+  
+  # Filtrar elementos NULL (archivos que no se pudieron procesar)
+  lista_tickets <- Filter(Negate(is.null), lista_tickets)
+  
+  return(lista_tickets)
+}
+
+
+  
 
 
 
