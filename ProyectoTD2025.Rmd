@@ -344,8 +344,11 @@ procesar_tickets <- function(directorio = "data") {
   return(lista_tickets)
 }
 
+# Procesar todos los tickets en la carpeta data
+todos_los_tickets <- procesar_tickets()
 
-  
+# Ver el primer ticket
+print(todos_los_tickets[[1]])
 
 
 
