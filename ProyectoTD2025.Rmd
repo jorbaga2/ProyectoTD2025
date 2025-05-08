@@ -429,4 +429,31 @@ kable(df_tickets, caption = "Tabla 1: Resumen de tickets de Mercadona procesados
 
 Los resultados, mostrados en la Tabla \@ref(tab:ejemplo-tickets), revelan que
 
+```{r}
+
+#Nos hacemos una idea del tipo de dato de cada columna.
+
+#Y por tanto, vamos a cambiar el tipo de dato de las siguientes columnas:
+
+
+table(df_tickets$hora, useNA="ifany")
+
+
+df_tickets<- df_tickets %>% mutate(
+  fecha = dmy(fecha), #Cambiamos la columna de fecha a tipo fecha
+ #Cambiamos las horas a fromato hm
+  hora = hm(hora),
+      
+  hora_entrada_parking =
+      hm(hora_entrada_parking),
+
+  hora_salida_parking =
+      hm(hora_salida_parking)
+)
+#Revisar hora_entrada_parking, hora_salida_parking, descuento y donación
+
+str(df_tickets)
+
+
+```
 
