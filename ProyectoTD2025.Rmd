@@ -489,7 +489,7 @@ df_tickets <- df_tickets %>%
     periodo_dia = ifelse(hour(hora) < 12, "Mañana", "Tarde")
   )
 
-compras_por_periodo <- df_tickets %>%
+compras_por_periodo <- df_tickets %>% filter(!is.na(periodo_dia)) %>%
   group_by(periodo_dia) %>%
   summarise(
     media_importe = mean(importe_total, na.rm = TRUE),
