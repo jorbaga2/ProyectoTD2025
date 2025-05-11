@@ -538,6 +538,16 @@ cat("Porcentaje sobre el total:", compras_emergencia$porcentaje, "%", "\n")
 
 ```
 
+6. ¿Qué día de la semana es el que menos compras registra?
+
+```{r}
+df_tickets<- df_tickets %>% filter(!is.na(fecha)) %>% mutate(dia_semana = format(fecha, "%A"))
+
+compras_por_dia<-df_tickets %>% group_by(dia_semana) %>% summarise(n_compras = n()) %>% arrange(n_compras)
+
+kable(compras_por_dia, caption = "Compras por día de la semana")
 
 
+```
 
+Obtenemos que el día de la semana en el que menos se compra es el Domingo con solamente 2 compras.
