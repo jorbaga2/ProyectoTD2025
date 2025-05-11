@@ -551,3 +551,37 @@ kable(compras_por_dia, caption = "Compras por día de la semana")
 ```
 
 Obtenemos que el día de la semana en el que menos se compra es el Domingo con solamente 2 compras.
+
+
+
+11. ¿Cuál es la mayor cantidad pagada de impuestos y en qué localización se ha producido?
+```{r}
+
+# Obtenemos el índice de la fila con mayor IVA
+indice_max_iva <- which.max(df_tickets$IVA)
+
+# Verificamos que el índice es válido
+if (!is.na(indice_max_iva) && indice_max_iva > 0) {
+  fila_max_iva <- df_tickets[indice_max_iva, ]
+  
+  # Extraemos el IVA y la localidad
+  mayor_iva <- fila_max_iva$IVA
+  localizacion_max_iva <- fila_max_iva$localidad
+  
+  # Mostramos el resultado
+  cat("La mayor cantidad pagada de impuestos es:", mayor_iva,
+      "y se ha producido en:", localizacion_max_iva, "\n")
+} else {
+  cat("No se pudo determinar la mayor cantidad pagada de impuestos.\n")
+}
+
+```
+
+ 
+12. ¿Cuál es el producto más caro?
+
+ 
+13. ¿Qué días presentan mayor volumen de ventas? ¿Se observan picos específicos durante la semana?
+
+ 
+ 
