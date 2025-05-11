@@ -260,12 +260,25 @@ procesar_lineas <- function(lineas) {
   }
   
   #Extraer donación
-  linea_donacion <- grep("DONACIÓN", lineas, value = TRUE)
+  
+  'linea_donacion <- grep("DONACIÓN", lineas, value = TRUE)
   if (length(linea_donacion) > 0) {
     datos$donacion <- as.numeric(gsub(",", ".", gsub(".*DONACIÓN:\\s*([0-9.,]+).*", "\\1", linea_donacion[1])))
   } else {
     datos$donacion <- NA
   }
+  '
+linea_donacion <- grep("DONACIÓN", lineas, value = TRUE)
+if (length(linea_donacion) > 0) {
+  # Busca el primer número con coma o punto como separador decimal
+  nro <- str_extract(linea_donacion[1], "\\d+[\\.,]\\d+")
+  if (!is.na(nro)) nro <- gsub(",", ".", nro)
+  datos$donacion <- as.numeric(nro)
+} else {
+  datos$donacion <- NA
+}
+  #Obtenemos que solamente hay dos tickets con donación. Cada uno con una donación de 1€.
+  #Estos son: 20231125 Mercadona 37,76 €.pdf y 
   
   #Extraer parking (hora entrada y salida si hay)
   linea_parking <- grep("PARKING", lineas)
@@ -456,4 +469,39 @@ str(df_tickets)
 
 
 ```
+
+
+
+Comenzamos a responder a las preguntas:
+
+
+Las preguntas que nos hemos planteado son:
+
+1. ¿Cuáles son los 5 productos más comprados? ¿Y cuántas veces ha sido comprado el qué más?
+
+2. ¿A qué tienda (calle ...) pertenecen la mayor parte de los tickets? 
+
+3. ¿En qué horario (mañana o tarde) se hacen las compras más caras?
+
+```{r}
+df_tickets <- df_tickets %>%
+  mutate(
+    periodo_dia = ifelse(hour(hora) < 12, "Mañana", "Tarde")
+  )
+
+compras_por_periodo <- df_tickets %>%
+  group_by(periodo_dia) %>%
+  summarise(
+    media_importe = mean(importe_total, na.rm = TRUE),
+    mediana_importe = median(importe_total, na.rm = TRUE)
+  )
+
+kable(compras_por_periodo, caption = "Importe medio por periodo del día")
+
+
+
+```
+
+El resultado muestra que, en promedio, las compras realizadas por la mañana son más caras (51.69€) que las realizadas por la tarde (45.64 €). La mediana también es ligeramente más alta por la mañana (36.69 € vs. 37.38 € por la tarde), aunque la diferencia en medianas es mínima.
+
 
