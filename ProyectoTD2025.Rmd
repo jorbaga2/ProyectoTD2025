@@ -505,3 +505,22 @@ kable(compras_por_periodo, caption = "Importe medio por periodo del día")
 El resultado muestra que, en promedio, las compras realizadas por la mañana son más caras (51.69€) que las realizadas por la tarde (45.64 €). La mediana también es ligeramente más alta por la mañana (36.69 € vs. 37.38 € por la tarde), aunque la diferencia en medianas es mínima.
 
 
+4. ¿Cuál ha sido el ticket más caro registrado? ¿Y el más barato?
+
+```{r}
+ticket_mas_caro<- df_tickets %>% arrange(desc(importe_total)) %>% head(1)
+
+ticket_mas_barato<- df_tickets %>% arrange(importe_total) %>% head(1)
+
+cat("El ticket más caro es", ticket_mas_caro$archivo, "con un importe de: ", ticket_mas_caro$importe_total, "€", "\n")
+
+cat("El ticket más barato es", ticket_mas_barato$archivo, "con un importe de: ", ticket_mas_barato$importe_total, "€")
+
+
+
+
+
+```
+Ya hemos obtenido el ticket más caro registrado con más de 200€ de diferencia con respecto al más barato.
+
+
