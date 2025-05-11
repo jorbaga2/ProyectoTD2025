@@ -524,3 +524,20 @@ cat("El ticket más barato es", ticket_mas_barato$archivo, "con un importe de: "
 Ya hemos obtenido el ticket más caro registrado con más de 200€ de diferencia con respecto al más barato.
 
 
+5.¿Cómo de frecuentes son las compras de emergencia (tickets de menos de 10€)?
+
+```{r}
+compras_emergencia<- df_tickets %>% summarise(n_emergencia = sum(importe_total < 10, na.rm = TRUE),
+porcentaje = mean(importe_total < 10, na.rm = TRUE) *100)
+
+
+cat("Número de compras de emergencia:", compras_emergencia$n_emergencia, "\n")
+
+cat("Porcentaje sobre el total:", compras_emergencia$porcentaje, "%", "\n")
+
+
+```
+
+
+
+
