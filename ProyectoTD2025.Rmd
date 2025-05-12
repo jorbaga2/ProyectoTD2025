@@ -4,8 +4,8 @@ author: Jorge Ballesteros García, Emma Almenar García, Miguel Angel Aloy Poved
   Larios Bea, Samuel Lozada Borrás, Iker Martínez Bravo
 date: "2025-04-07"
 output:
-  pdf_document: default
   html_document: default
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -465,11 +465,235 @@ str(df_tickets)
 
 Comenzamos a responder a las preguntas:
 
+<<<<<<< HEAD
 Las preguntas que nos hemos planteado son:
 
 1.  ¿Cuáles son los 5 productos más comprados? ¿Y cuántas veces ha sido comprado el qué más?
 
 2.  ¿A qué tienda (calle ...) pertenecen la mayor parte de los tickets?
+=======
+¿Cuáles son los 5 productos, de los vendidos por unidades, con más ventas ? 
+¿Cuántas unidades de cada uno se han vendido ?
+
+```{r}
+
+#Creamos una lista con todos los productos de los tickets del dataframe
+todos_los_productos <- bind_rows(lapply(todos_los_tickets, function(ticket) ticket$productos))
+
+#Filtramos los productos a aquellos que se venden por unidades
+todos_productos_unidades <- todos_los_productos %>% filter(
+    cantidad %% 1 == 0,  # cantidad entera
+    !grepl("kg|€/kg", descripcion, ignore.case = TRUE)  # no se menciona peso
+  )
+
+#Agrupamos los productos por nombre
+todos_productos_unidades <- todos_productos_unidades %>% group_by(descripcion)
+
+#Sumamos las cantidades de todos los productos que tienen el mismo nombre
+todos_productos_unidades <- todos_productos_unidades %>% summarise(unidades_vendidas = sum(cantidad, na.rm = TRUE)) 
+
+#Ordenamos los productos de manera descendente
+todos_productos_unidades <- todos_productos_unidades %>% arrange(desc(unidades_vendidas)) 
+
+#Cogemos los cinco primeros productos de la tabla
+todos_productos_unidades <- todos_productos_unidades %>% slice_head(n = 5)
+
+#Mostramos los cinco productos comprados por unidades más vendidos.
+print(todos_productos_unidades)
+
+```
+
+2.Si consideramos la categoría de FRUTAS Y VERDURAS. Cuáles son los 5 productos 
+más vendidos ? ¿Cuántos kilos se han vendido de cada uno de estos productos?
+
+```{r}
+
+# Filtrar productos de frutas y verduras
+frutas_verduras <- todos_los_productos %>%
+  filter(str_detect(descripcion, "^1.*\\(.*kg.*\\)"))
+
+# Extraer los kilos vendidos de la descripción
+frutas_verduras <- frutas_verduras %>%
+  mutate(kilos_vendidos = as.numeric(str_extract(descripcion, "(?<=\\()\\d+\\.\\d{3}")))
+
+# Agrupar por el nombre del producto sin el "1" de delante
+frutas_verduras_mas_vendidas <- frutas_verduras %>%
+  mutate(producto = str_remove(str_extract(descripcion, "^[^\\(]+"), "^1 ")) %>%
+  group_by(producto) %>%
+  summarise(kilos_totales = sum(kilos_vendidos)) %>%
+  arrange(desc(kilos_totales)) %>%
+  head(5)
+
+# Ver los resultados
+print(frutas_verduras_mas_vendidas)
+
+
+```
+
+3.Si consideramos la categoría de PESCADO. Cuáles son los 5 productos más vendidos?
+¿Cuántos kilos se han vendido de cada uno de estos productos ?
+
+```{r}
+
+# Filtramos los productos que pertenecen a la categoria pescado de la lista de todos
+#los productos
+pescado <- todos_los_productos %>%
+  filter(str_detect(descripcion, "^((?!^1).)*\\(.*kg.*\\)"))
+
+# Extraemos los kilos vendidos de la descripción
+pescado <- pescado %>%
+  mutate(kilos_vendidos = as.numeric(str_extract(descripcion, "(?<=\\()\\d+\\.\\d{3}")))
+
+# Agrupamos por nombre del producto y sumamos los kilos vendidos
+pescados_mas_vendidos <- pescado %>%
+  mutate(producto = str_extract(descripcion, "^[^\\(]+")) %>%
+  group_by(producto) %>%
+  summarise(kilos_totales = sum(kilos_vendidos)) %>%
+  arrange(desc(kilos_totales)) %>%
+  head(5)
+
+# Mostramos los 5 pescados más vendidos junto a los kilos totales vendidos
+print(pescados_mas_vendidos)
+
+```
+
+4. Muestra mediante un gráfico de líneas como ha variado el precio por kilo de las 
+bananas y los plátanos en los tickets disponibles, a lo largo del tiempo.
+
+```{r}
+
+library(dplyr)
+library(ggplot2)
+
+#Seleccionamos de la lista con toda la información todos los productos y su fecha de venta 
+todos_los_productos <- bind_rows(lapply(todos_los_tickets, function(ticket) {
+  if (nrow(ticket$productos) > 0) { 
+    ticket_productos <- ticket$productos
+    ticket_productos$fecha <- ticket$fecha
+    return(ticket_productos)
+  } else {
+    return(NULL)
+  }
+}))
+
+# Filtramos las bananas y los plátanos
+frutas <- todos_los_productos %>% filter(str_detect(tolower(descripcion), "banana|platano")) 
+
+
+#Seleccionamos el precio del kilo que se encuentra al lado del nombre del producto
+frutas <- frutas %>% 
+  mutate(precio_kilo = as.numeric(str_extract(descripcion, "(?<=a )\\d+\\.\\d{2}"))) 
+
+#Comprobamos que las fechas se encuntren en el formato correcto
+frutas$fecha <- as.Date(frutas$fecha, format = "%d/%m/%Y") 
+
+# Normalizamos los nombres (banana vs platano)
+frutas <- frutas %>%
+  mutate(tipo = case_when(
+    str_detect(tolower(descripcion), "banana") ~ "Banana",
+    str_detect(tolower(descripcion), "platano") ~ "Platano"
+  ))
+
+# Creamos la gráfica con la evolución del precio por kilo
+ggplot(frutas, aes(x = fecha, y = precio_kilo, color = tipo)) +
+  geom_line() +
+  labs(
+    title = "Variación del precio por kilo: Bananas vs Plátanos",
+    x = "Fecha",
+    y = "Precio por kilo (€)",
+    color = "Producto"
+  ) +
+  theme_minimal()
+
+```
+
+5.- ¿ Cuál es la procedencia de los tickets ?¿ Qué ciudad/ pueblo tiene un mayor número de tickets ?
+```{r}
+tickets_por_localidad <- df_tickets %>%
+  group_by(localidad) %>%
+  summarise(num_tickets = n()) %>%
+  arrange(desc(num_tickets))
+
+
+kable(tickets_por_localidad, caption = "Número de tickets por ciudad/pueblo")
+
+localidad_top <- tickets_por_localidad %>% slice(1)
+cat("La ciudad/pueblo con mayor número de tickets es:", localidad_top$localidad, 
+    "con", localidad_top$num_tickets, "tickets.\n")
+
+localidad_top
+
+
+```
+Podemos ver que la ciudad/pueblo que mas tickets tiene es Valencia con 121, y le siguen Alboraya y Alcoy. Tiene sentido, ya que es la capital y la localidad con mas habitantes de la provincia de Valencia y de la CV, y por tanto es mas probable que haya alumnos con tickets de Valencia.
+
+6.- Muestra mediante un diagrama el número de tickets recogidos cada día de las semana. ¿Si tuvieses que cerrar un día entre semana qué día lo harías ?
+```{r}
+
+tickets_por_dia <- df_tickets %>%
+  mutate(dia_semana = wday(fecha, label = TRUE, abbr = FALSE, week_start = 1, locale = "es_ES.UTF-8")) %>%
+  count(dia_semana)
+
+
+kable(tickets_por_dia, caption = "Número de tickets por día de la semana")
+
+
+ggplot(tickets_por_dia, aes(x = dia_semana, y = n, fill = dia_semana)) +
+  geom_bar(stat = "identity", show.legend = FALSE) +
+  labs(title = "Número de tickets por día de la semana",
+       x = "Día de la semana", y = "Número de tickets") +
+  theme_minimal()
+
+```
+Teniendo en cuenta que el domingo no está abierto ningún Mercadona(excepto ciertos casos muy concretos), deberíamos cerrar el jueves ya que es el dia que menos compras se registran.
+
+
+
+Las preguntas que nos hemos planteado son:
+
+1. ¿Cuáles son los 5 productos más comprados? ¿Y cuántas veces ha sido comprado el qué más?
+```{r}
+top10_productos <- todos_los_productos %>%
+  group_by(descripcion) %>%
+  summarise(total_comprado = sum(cantidad, na.rm = TRUE)) %>%
+  arrange(desc(total_comprado)) %>%
+  slice_head(n = 10)
+
+
+print(top10_productos)
+
+top5_productos <- todos_los_productos %>%
+  group_by(descripcion) %>%
+  summarise(total_comprado = sum(cantidad, na.rm = TRUE)) %>%
+  arrange(desc(total_comprado)) %>%
+  slice_head(n = 5)
+
+
+print(top5_productos)
+
+producto_mas_comprado <- top5_productos %>% slice(1)
+cat("El producto más comprado es:", producto_mas_comprado$descripcion, 
+    "con", producto_mas_comprado$total_comprado, "unidades compradas.\n")
+```
+Los 5 poductos mas vendidos son el Atun Claro Oliva, el Queso Lonchas Cabra, la BOLSA PLASTICO,	
+la LECHE DESNAT. CALCIO y el YOGUR COCO. El que mas, que es el ATUN CLARO OLIVA, se ha comprado 62 veces.
+
+
+2. ¿A qué tienda (calle ...) pertenecen la mayor parte de los tickets? 
+```{r}
+tickets_por_direccion <- df_tickets %>%
+  group_by(direccion) %>%
+  summarise(num_tickets = n()) %>%
+  arrange(desc(num_tickets))
+
+
+direccion_top <- tickets_por_direccion %>% slice(1)
+
+print(tickets_por_direccion) 
+direccion_top
+```
+La tienda (calle) con mayor número de tickets es: C/ QUART 120 con 51 tickets.
+>>>>>>> e0d38cec7134a564885ae4e842a99a90ec1d6d32
 
 3.  ¿En qué horario (mañana o tarde) se hacen las compras más caras?
 
@@ -541,7 +765,6 @@ kable(compras_por_dia, caption = "Compras por día de la semana")
 
 Obtenemos que el día de la semana en el que menos se compra es el Domingo con solamente 2 compras.
 
-
 7. ¿Qué localidad es la que acumula la mayor cantidad de dinero gastado en Mercadona, y a cuánto asciende esta cifra?
 ```{r}
 df_tickets %>%
@@ -553,3 +776,38 @@ df_tickets %>%
 ```
 Se obtiene que la localidad en la que mayor cantidad de dinero se ha gastado es Valencia con un total de 5253,03€.
 
+<<<<<<< HEAD
+=======
+
+11. ¿Cuál es la mayor cantidad pagada de impuestos y en qué localización se ha producido?
+```{r}
+
+# Obtenemos el índice de la fila con mayor IVA
+indice_max_iva <- which.max(df_tickets$IVA)
+
+# Verificamos que el índice es válido
+if (!is.na(indice_max_iva) && indice_max_iva > 0) {
+  fila_max_iva <- df_tickets[indice_max_iva, ]
+  
+  # Extraemos el IVA y la localidad
+  mayor_iva <- fila_max_iva$IVA
+  localizacion_max_iva <- fila_max_iva$localidad
+  
+  # Mostramos el resultado
+  cat("La mayor cantidad pagada de impuestos es:", mayor_iva,
+      "y se ha producido en:", localizacion_max_iva, "\n")
+} else {
+  cat("No se pudo determinar la mayor cantidad pagada de impuestos.\n")
+}
+
+```
+
+ 
+12. ¿Cuál es el producto más caro?
+
+ 
+13. ¿Qué días presentan mayor volumen de ventas? ¿Se observan picos específicos durante la semana?
+
+ 
+ 
+>>>>>>> e0d38cec7134a564885ae4e842a99a90ec1d6d32
