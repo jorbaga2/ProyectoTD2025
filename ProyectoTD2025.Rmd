@@ -814,6 +814,22 @@ if (!is.na(indice_max_iva) && indice_max_iva > 0) {
   cat("No se pudo determinar la mayor cantidad pagada de impuestos.\n")
 }
 
+# Vamos a representarlo en un gráfico
+# Agrupamos por localidad y sumamos el IVA total pagado
+iva_por_localidad <- df_tickets %>%
+  group_by(localidad) %>%
+  summarise(total_IVA = sum(IVA, na.rm = TRUE)) %>%
+  arrange(desc(total_IVA))
+
+# Creamos el gráfico de barras
+ggplot(iva_por_localidad, aes(x = localidad, y = total_IVA, fill = localidad)) +
+  geom_bar(stat = "identity") +
+  coord_flip() +
+  labs(title = "Cantidad total de IVA pagado por localidad", x = "Localidad", y = "Total IVA (€)") +
+  theme_minimal() +
+  theme(legend.position = "none") +
+  scale_fill_viridis_d()  
+
 ```
 
  
