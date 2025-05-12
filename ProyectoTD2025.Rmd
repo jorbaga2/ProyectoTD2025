@@ -790,6 +790,24 @@ cat("Tickets entre 19:00 y 21:30:", entre_19_y_21_30, "\n")
 ```
 Si comparamos los tickets que se emiten entre las 9:00-10:00 y entre las 19:00-21:30 podemos ver que se emiten muchos más tickets entre 19:00-21:30, emitiéndose un poco más de 10 veces lo que se emite por la mañana.
 
+9. ¿Qué producto aparece más veces en tickets de más de 100 €?
+```{r}
+
+todos_los_tickets %>%
+  # Filtramos solo tickets con importe_total > 100
+  purrr::keep(~ .x$importe_total > 100) %>%
+  # Extraemos las tablas de productos
+  purrr::map_df(~ .x$productos) %>%
+  # Agrupamos por descripción del producto y contamos
+  group_by(descripcion) %>%
+  summarise(total = sum(cantidad, na.rm = TRUE), .groups = "drop") %>%
+  arrange(desc(total)) %>%
+  slice(1)
+
+```
+El producto que más aparece en las compras superiores a 100€ es el espárrago verde fino, con un total de 17 compras distintas con un importe superior a 100€.
+
+
 <<<<<<< HEAD
 =======
 
