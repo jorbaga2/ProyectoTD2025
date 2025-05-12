@@ -12,60 +12,70 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-Mini Proyecto de Análisis Exploratorio de Datos
-Emma Almenar García, Jorge Ballesteros García, Miguel Ángel Aloy Poveda, Ainhoa Larios Bea, 
-Samuel Lozada Borrás, Iker Martínez Bravo
 
 
-Índice:
-1.- Introducción
-2.- Material y métodos 
-3.- Resultados
-4.- Conclusiones
+# Introducción.
 
+En este proyecto se realiza un análisis exploratorio de datos basado en tickets 
+de compra del supermercado Mercadona, con el objetivo de identificar patrones de 
+consumo, tendencias en los productos adquiridos y comportamientos de los clientes. 
+Este trabajo se estructura en varias etapas que incluyen la carga y limpieza de 
+datos, análisis descriptivo, visualización de resultados y respuesta a preguntas 
+clave planteadas durante el desarrollo del proyecto.
 
-1.- Introducción.
-En este proyecto se realiza un análisis exploratorio de datos basado en tickets de compra del supermercado Mercadona, con el objetivo de identificar patrones de consumo, tendencias en los productos adquiridos y comportamientos de los clientes. Este trabajo se estructura en varias etapas que incluyen la carga y limpieza de datos, análisis descriptivo, visualización de resultados y respuesta a preguntas clave planteadas durante el desarrollo del proyecto.
+Los tickets de compra del supermercado Mercadona han sido recogidos por los 
+diferentes estudiantes de la asignatura de Tratamiento de los Datos de la carrera
+Ciencia de Datos en la Universidad de Valencia.
 
-1.1.- Carga de librerías y procesamiento inicial
-Para llevar a cabo el análisis, se utilizaron diversas librerías de R como pdftools, dplyr y stringr. Estas herramientas facilitan la lectura y conversión de los tickets desde formato PDF a texto procesable. El programa desarrollado incluye funciones específicas para:
-Identificar si los documentos corresponden a tickets del supermercado Mercadona.
-Extraer información clave del encabezado (nombre del supermercado, dirección, fecha, hora, etc.).
-Procesar productos listados en los tickets, incluyendo aquellos vendidos a peso.
-Capturar detalles adicionales como descuentos, IVA, método de pago o uso del parking.
-Es necesario hacer esta carga antes de empezar con el programa:
+## Carga de librerías y procesamiento inicial
 
-Carga de librerías
+Para llevar a cabo el análisis, se utilizaron principalemente las librerías de R 
+pdftools, dplyr y stringr. Estas herramientas facilitan la lectura y conversión 
+de los tickets desde formato PDF a texto procesable. El programa desarrollado 
+incluye funciones específicas para:
+
+- Identificar si los documentos corresponden a tickets del supermercado Mercadona.
+- Extraer información clave del encabezado (nombre del supermercado, dirección, fecha, hora, etc.).
+- Procesar productos listados en los tickets, incluyendo aquellos vendidos a peso.
+- Capturar detalles adicionales como descuentos, IVA, método de pago o uso del parking.
+
+Es necesario hacer esta carga antes de empezar con el programa, por tanto, 
+cargamos las diferentes librerías.
 
 ```{r}
-# Asegurarse de que el paquete "pacman" está instalado
+# Nos aseguramos de que el paquete "pacman" está instalado
 if (!require('pacman')) install.packages('pacman')
 
-# Librerias a cargar
+# Cargamos las librerias
 pacman::p_load(pdftools, tidyverse, readxl, lubridate, visdat, knitr, rticles, tinytex, kableExtra, patchwork, cowplot, wordcloud)
-
 
 ```
 
-1.2.- Características generales del conjunto de los datos.
+## Características generales del conjunto de los datos.
 
-Los datos procesados corresponden a 355 tickets (no todos ellos válidos) obtenidos a partir de archivos PDF. Cada ticket contiene información organizada en las siguientes variables principales:
+Los datos procesados corresponden a 355 tickets (no todos ellos válidos) obtenidos 
+a partir de archivos PDF. Cada ticket contiene información organizada en las 
+siguientes variables principales:
 
-Encabezado: Información del supermercado (nombre, dirección, localidad), fecha y hora de la compra.
-Productos: Detalles sobre cada producto adquirido (cantidad, descripción, precio unitario e importe total).
-Totales: Subtotal, IVA, descuentos aplicados e importe total del ticket.
-Extras: Datos sobre donaciones realizadas, uso del parking (hora de entrada y salida) y método de pago.
+- Encabezado: Información del supermercado (nombre, dirección, localidad), fecha y hora de la compra.
+- Productos: Detalles sobre cada producto adquirido (cantidad, descripción, precio unitario e importe total).
+- Totales: Subtotal, IVA, descuentos aplicados e importe total del ticket.
+- Extras: Datos sobre donaciones realizadas, uso del parking (hora de entrada y salida) y método de pago.
 
-1.3.- Análisis de valores faltantes.
+## Análisis de valores faltantes.
 
-Se utilizó la librería VIM para analizar los valores faltantes (NA) en el dataset. Los principales hallazgos incluyen:
-Algunos tickets no contenían información completa sobre las categorías de productos.
-En ciertos casos, el precio unitario o la cantidad estaban ausentes debido a errores en el registro.
+Se utilizó la librería VIM para analizar los valores faltantes (NA) en el dataset. 
+Los principales hallazgos incluyen:
+
+- Algunos tickets no contenían información completa sobre las categorías de productos.
+- En ciertos casos, el precio unitario o la cantidad estaban ausentes debido a errores en el registro.
+
 Para abordar estos problemas, se aplicaron reglas específicas:
-Los registros con precios unitarios faltantes fueron eliminados si no era posible imputar un valor razonable.
-Los valores NA en las categorías fueron imputados utilizando patrones observados en otros registros similares.
 
-1.4.- Preguntas planteadas.
+- Los registros con precios unitarios faltantes fueron eliminados si no era posible imputar un valor razonable.
+- Los valores NA en las categorías fueron imputados utilizando patrones observados en otros registros similares.
+
+## Preguntas planteadas.
 
 El análisis busca responder a preguntas clave relacionadas con los patrones de compra como las siguientes:
 ¿Cuáles son los 5 productos más comprados? ¿Y cuántas veces ha sido comprado el qué más?
@@ -74,7 +84,7 @@ El análisis busca responder a preguntas clave relacionadas con los patrones de 
 ¿Cuál es la mayor cantidad pagada de impuestos y en qué localización se ha producido?
 ¿Qué día de la semana es el que menos compras registra?
 
-2.- Métodos y materiales.
+# Métodos y materiales.
 
 
 
