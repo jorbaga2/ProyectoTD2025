@@ -807,6 +807,41 @@ todos_los_tickets %>%
 ```
 El producto que más aparece en las compras superiores a 100€ es el espárrago verde fino, con un total de 17 compras distintas con un importe superior a 100€.
 
+10. ¿Cuántas veces se ha comprado queso?
+
+```{r}
+
+# Filtrar las filas que comienzan con "Queso"
+productos_queso <- todos_los_productos[grepl("^Queso", todos_los_productos$descripcion, ignore.case = TRUE), ]
+
+# Agrupar por descripción exacta y contar cuántas veces aparece cada línea
+productos_queso_agrupado <- productos_queso %>%
+  group_by(descripcion) %>%
+  summarise(cantidad_total = sum(cantidad))
+
+# Ordenar los resultados por la cantidad total
+productos_queso_agrupado <- productos_queso_agrupado %>%
+  arrange(desc(cantidad_total))
+
+# Calcular el total de todos los quesos
+total_quesos <- sum(productos_queso_agrupado$cantidad_total)
+
+# Mostrar el total de quesos
+print(paste("Total de quesos: ", total_quesos))
+
+# Crear el gráfico
+ggplot(productos_queso_agrupado, aes(x = reorder(descripcion, cantidad_total), y = cantidad_total)) +
+  geom_bar(stat = "identity", fill = "skyblue") +
+  labs(title = "Cantidad total de quesos por descripción",
+       x = "Descripción del queso",
+       y = "Cantidad total") +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))  # Rotar las etiquetas del eje x
+
+
+```
+Podemos ver que el total de quesos comprados en estos ticket es de 227.
+
+
 
 <<<<<<< HEAD
 =======
