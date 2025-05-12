@@ -849,6 +849,19 @@ cat("El producto más caro es:", producto_mas_caro$descripcion,
     "con un importe de:", producto_mas_caro$importe, "€\n")
 
 
+# Vamos a representarlo en un gráfico
+# Seleccionamos los 4 productos más caros
+top_productos <- df_productos %>% arrange(desc(importe)) %>% head(4)
+
+# Creamos el gráfico de barras
+ggplot(top_productos, aes(x = reorder(descripcion, importe), y = importe, fill = descripcion)) +
+  geom_bar(stat = "identity") +
+  coord_flip() +  
+  labs(title = "Top 4 productos más caros", x = "Producto", y = "Importe (€)") +
+  theme_minimal() +
+  theme(legend.position = "none") +
+  scale_fill_brewer(palette = "Set3")
+
 ```
 
  
