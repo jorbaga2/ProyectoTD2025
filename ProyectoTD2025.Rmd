@@ -823,6 +823,22 @@ if (!is.na(indice_max_iva) && indice_max_iva > 0) {
 
  
 12. ¿Cuál es el producto más caro?
+```{r}
+
+# Unimos todos los productos de los tickets en un solo dataframe
+df_productos <- do.call(rbind, lapply(todos_los_tickets, function(ticket) {
+  ticket$productos
+}))
+
+# Filtramos el producto con el mayor importe
+producto_mas_caro <- df_productos %>% arrange(desc(importe)) %>% head(1)
+
+# Mostramos el resultado
+cat("El producto más caro es:", producto_mas_caro$descripcion, 
+    "con un importe de:", producto_mas_caro$importe, "€\n")
+
+
+```
 
  
 13. ¿Qué días presentan mayor volumen de ventas? ¿Se observan picos específicos durante la semana?
