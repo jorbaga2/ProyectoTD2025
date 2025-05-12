@@ -47,6 +47,35 @@ pacman::p_load(pdftools, tidyverse, readxl, lubridate, visdat, knitr, rticles, t
 
 ```
 
+1.2.- Características generales del conjunto de los datos.
+
+Los datos procesados corresponden a 355 tickets (no todos ellos válidos) obtenidos a partir de archivos PDF. Cada ticket contiene información organizada en las siguientes variables principales:
+
+Encabezado: Información del supermercado (nombre, dirección, localidad), fecha y hora de la compra.
+Productos: Detalles sobre cada producto adquirido (cantidad, descripción, precio unitario e importe total).
+Totales: Subtotal, IVA, descuentos aplicados e importe total del ticket.
+Extras: Datos sobre donaciones realizadas, uso del parking (hora de entrada y salida) y método de pago.
+
+1.3.- Análisis de valores faltantes.
+
+Se utilizó la librería VIM para analizar los valores faltantes (NA) en el dataset. Los principales hallazgos incluyen:
+Algunos tickets no contenían información completa sobre las categorías de productos.
+En ciertos casos, el precio unitario o la cantidad estaban ausentes debido a errores en el registro.
+Para abordar estos problemas, se aplicaron reglas específicas:
+Los registros con precios unitarios faltantes fueron eliminados si no era posible imputar un valor razonable.
+Los valores NA en las categorías fueron imputados utilizando patrones observados en otros registros similares.
+
+1.4.- Preguntas planteadas.
+
+El análisis busca responder a preguntas clave relacionadas con los patrones de compra como las siguientes:
+¿Cuáles son los 5 productos más comprados? ¿Y cuántas veces ha sido comprado el qué más?
+¿Qué días presentan mayor volumen de ventas? ¿Se observan picos específicos durante la semana?
+ ¿Qué producto aparece más veces en tickets de más de 100 €?
+¿Cuál es la mayor cantidad pagada de impuestos y en qué localización se ha producido?
+¿Qué día de la semana es el que menos compras registra?
+
+2.-Métodos y materiales.
+
 Vamos a crear una función que procese un ticket individual
 
 ```{r}
