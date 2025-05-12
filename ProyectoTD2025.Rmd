@@ -85,44 +85,63 @@ Para abordar estos problemas, se aplicaron reglas específicas:
 ## Preguntas planteadas.
 
 El análisis busca responder a preguntas clave relacionadas con los patrones de compra como las siguientes:
-¿Cuáles son los 5 productos más comprados? ¿Y cuántas veces ha sido comprado el qué más?
-¿Qué días presentan mayor volumen de ventas? ¿Se observan picos específicos durante la semana?
- ¿Qué producto aparece más veces en tickets de más de 100 €?
-¿Cuál es la mayor cantidad pagada de impuestos y en qué localización se ha producido?
-¿Qué día de la semana es el que menos compras registra?
+- ¿Cuáles son los 5 productos más comprados? ¿Y cuántas veces ha sido comprado el qué más?
+- ¿Qué días presentan mayor volumen de ventas? ¿Se observan picos específicos durante la semana?
+- ¿Qué producto aparece más veces en tickets de más de 100 €?
+- ¿Cuál es la mayor cantidad pagada de impuestos y en qué localización se ha producido?
+- ¿Qué día de la semana es el que menos compras registra?
 
 # Métodos y materiales.
 
 
+# Creación de la función para la lectura de tickets.
 
+El primer paso del proyecto consiste en la automatización de un código para la 
+lectura de los diferentes tickets de compra del Mercadona. Para ello creamos una 
+función que procese un ticket individual, y como todos los tickets comparten el
+mismo formato, podremos utilizarla para la lectura de todos. 
 
-Vamos a crear una función que procese un ticket individual
+Lo primero que hacemos en la función para la lectura de los tickets es una subfunción 
+para la leer los archivos PDF y convertir la información obtenida en líneas de
+texto procesadas.
 
 ```{r}
 
-# Función para leer PDF y convertir en líneas de texto procesadas
 leer_pdf <- function(archivo) {
-  texto <- pdf_text(archivo)
-  lineas <- unlist(strsplit(paste(texto, collapse = "\n"), "\n"))
+  texto <- pdf_text(archivo) #Lee la información del PDF
+  lineas <- unlist(strsplit(paste(texto, collapse = "\n"), "\n")) #Transforma la información en líneas de texto procesadas
   trimws(lineas)
 }
+```
 
+Después creamos otra subfunción que busca la palabra "MERCADONA" en mayúsculas de las 
+líneas de texto procesadas para seleccionar solo los tickets pertenecientes a este 
+supermecado.
 
-#Función que busca "MERCADONA" en mayúsculas.
+```{r}
+
 es_mercadona <- function(lineas) {
-  if(length(lineas) == 0) return(FALSE)
+  if(length(lineas) == 0) return(FALSE) #Si no lee información del ticket
   any(grepl("^MERCADONA\\b", lineas))  # ^ indica inicio de línea, \b para palabra completa
 }
 
-# Función para procesar las líneas y extraer información
+```
+
+El siguiente paso es crear otra subfunción para procesar las líneas y extaer la 
+información de los tickets, necesaria para analizar y posteriormente contestar a 
+las cuestiones planteadas. En esta subfunción indicaremos si el ticket es o no del 
+Mercadona, en el caso del ser del Mercadona incializaremos uns lsita para almacenar 
+los datos de los tickets (como supermercado, direccion, cp, localidad,...)
+
+```{r}
+
 procesar_lineas <- function(lineas) {
   if(!es_mercadona(lineas)) {
     message("El texto no corresponde a un ticket de Mercadona")
-    return(NULL)
+    return(NULL) #Si el ticket no es de Mercadona
   }
   
 #Inicializamos una lista para almacenar datos. Esta lista incluye los datos de tanto el encabezado, como los productos
-  
   datos<-list(
     supermercado = NA,
     direccion = NA,
