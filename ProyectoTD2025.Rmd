@@ -505,6 +505,33 @@ print(todos_productos_unidades)
 
 ```
 
+2.Si consideramos la categoría de FRUTAS Y VERDURAS. Cuáles son los 5 productos 
+más vendidos ? ¿Cuántos kilos se han vendido de cada uno de estos productos?
+
+```{r}
+
+# Filtrar productos de frutas y verduras
+frutas_verduras <- todos_los_productos %>%
+  filter(str_detect(descripcion, "^1.*\\(.*kg.*\\)"))
+
+# Extraer los kilos vendidos de la descripción
+frutas_verduras <- frutas_verduras %>%
+  mutate(kilos_vendidos = as.numeric(str_extract(descripcion, "(?<=\\()\\d+\\.\\d{3}")))
+
+# Agrupar por el nombre del producto sin el "1" de delante
+frutas_verduras_mas_vendidas <- frutas_verduras %>%
+  mutate(producto = str_remove(str_extract(descripcion, "^[^\\(]+"), "^1 ")) %>%
+  group_by(producto) %>%
+  summarise(kilos_totales = sum(kilos_vendidos)) %>%
+  arrange(desc(kilos_totales)) %>%
+  head(5)
+
+# Ver los resultados
+print(productos_mas_vendidos)
+
+
+```
+
 
 Las preguntas que nos hemos planteado son:
 
