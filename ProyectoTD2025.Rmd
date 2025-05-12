@@ -609,6 +609,27 @@ ggplot(frutas, aes(x = fecha, y = precio_kilo, color = tipo)) +
 
 ```
 
+5.- ¿ Cuál es la procedencia de los tickets ?¿ Qué ciudad/ pueblo tiene un mayor número de tickets ?
+```{r}
+tickets_por_localidad <- df_tickets %>%
+  group_by(localidad) %>%
+  summarise(num_tickets = n()) %>%
+  arrange(desc(num_tickets))
+
+
+kable(tickets_por_localidad, caption = "Número de tickets por ciudad/pueblo")
+
+localidad_top <- tickets_por_localidad %>% slice(1)
+cat("La ciudad/pueblo con mayor número de tickets es:", localidad_top$localidad, 
+    "con", localidad_top$num_tickets, "tickets.\n")
+
+localidad_top
+
+
+```
+Podemos ver que la ciudad/pueblo que mas tickets tiene es Valencia con 121, y le siguen Alboraya y Alcoy. Tiene sentido, ya que es la capital y la localidad con mas habitantes de la provincia de Valencia y de la CV, y por tanto es mas probable que haya alumnos con tickets de Valencia.
+
+
 Las preguntas que nos hemos planteado son:
 
 1. ¿Cuáles son los 5 productos más comprados? ¿Y cuántas veces ha sido comprado el qué más?
