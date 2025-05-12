@@ -527,7 +527,7 @@ frutas_verduras_mas_vendidas <- frutas_verduras %>%
   head(5)
 
 # Ver los resultados
-print(productos_mas_vendidos)
+print(frutas_verduras_mas_vendidas)
 
 
 ```
@@ -555,7 +555,7 @@ pescados_mas_vendidos <- pescado %>%
   head(5)
 
 # Mostramos los 5 pescados más vendidos junto a los kilos totales vendidos
-print(productos_mas_vendidos_pescado)
+print(pescados_mas_vendidos)
 
 ```
 
