@@ -474,6 +474,37 @@ str(df_tickets)
 
 Comenzamos a responder a las preguntas:
 
+¿Cuáles son los 5 productos, de los vendidos por unidades, con más ventas ? 
+¿Cuántas unidades de cada uno se han vendido ?
+
+```{r}
+
+#Creamos una lista con todos los productos de los tickets del dataframe
+todos_los_productos <- bind_rows(lapply(todos_los_tickets, function(ticket) ticket$productos))
+
+#Filtramos los productos a aquellos que se venden por unidades
+todos_productos_unidades <- todos_los_productos %>% filter(
+    cantidad %% 1 == 0,  # cantidad entera
+    !grepl("kg|€/kg", descripcion, ignore.case = TRUE)  # no se menciona peso
+  )
+
+#Agrupamos los productos por nombre
+todos_productos_unidades <- todos_productos_unidades %>% group_by(descripcion)
+
+#Sumamos las cantidades de todos los productos que tienen el mismo nombre
+todos_productos_unidades <- todos_productos_unidades %>% summarise(unidades_vendidas = sum(cantidad, na.rm = TRUE)) 
+
+#Ordenamos los productos de manera descendente
+todos_productos_unidades <- todos_productos_unidades %>% arrange(desc(unidades_vendidas)) 
+
+#Cogemos los cinco primeros productos de la tabla
+todos_productos_unidades <- todos_productos_unidades %>% slice_head(n = 5)
+
+#Mostramos los cinco productos comprados por unidades más vendidos.
+print(todos_productos_unidades)
+
+```
+
 
 Las preguntas que nos hemos planteado son:
 
