@@ -515,7 +515,9 @@ frutas_verduras <- frutas_verduras %>%
 frutas_verduras_mas_vendidas <- frutas_verduras %>%
   mutate(producto = str_remove(str_extract(descripcion, "^[^\\(]+"), "^1 ")) %>%
   group_by(producto) %>%
-  summarise(kilos_totales = sum(kilos_vendidos)) %>%
+  summarise(
+    veces_comprado = n(),                    
+    kilos_totales = sum(kilos_vendidos))  %>%
   arrange(desc(kilos_totales)) %>%
   head(5)
 
@@ -543,7 +545,9 @@ pescado <- pescado %>%
 pescados_mas_vendidos <- pescado %>%
   mutate(producto = str_extract(descripcion, "^[^\\(]+")) %>%
   group_by(producto) %>%
-  summarise(kilos_totales = sum(kilos_vendidos)) %>%
+  summarise(
+    veces_comprado = n(),
+    kilos_totales = sum(kilos_vendidos)) %>%
   arrange(desc(kilos_totales)) %>%
   head(5)
 
