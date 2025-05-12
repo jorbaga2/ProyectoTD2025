@@ -629,6 +629,27 @@ localidad_top
 ```
 Podemos ver que la ciudad/pueblo que mas tickets tiene es Valencia con 121, y le siguen Alboraya y Alcoy. Tiene sentido, ya que es la capital y la localidad con mas habitantes de la provincia de Valencia y de la CV, y por tanto es mas probable que haya alumnos con tickets de Valencia.
 
+6.- Muestra mediante un diagrama el número de tickets recogidos cada día de las semana. ¿Si tuvieses que cerrar un día entre semana qué día lo harías ?
+```{r}
+
+tickets_por_dia <- df_tickets %>%
+  mutate(dia_semana = wday(fecha, label = TRUE, abbr = FALSE, week_start = 1, locale = "es_ES.UTF-8")) %>%
+  count(dia_semana)
+
+
+kable(tickets_por_dia, caption = "Número de tickets por día de la semana")
+
+
+ggplot(tickets_por_dia, aes(x = dia_semana, y = n, fill = dia_semana)) +
+  geom_bar(stat = "identity", show.legend = FALSE) +
+  labs(title = "Número de tickets por día de la semana",
+       x = "Día de la semana", y = "Número de tickets") +
+  theme_minimal()
+
+```
+Teniendo en cuenta que el domingo no está abierto ningún Mercadona(excepto ciertos casos muy concretos), deberíamos cerrar el jueves ya que es el dia que menos compras se registran.
+
+
 
 Las preguntas que nos hemos planteado son:
 
