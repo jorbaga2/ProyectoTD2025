@@ -12,8 +12,6 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-
-
 Carga de librerías
 
 ```{r}
@@ -26,10 +24,7 @@ pacman::p_load(pdftools, tidyverse, readxl, lubridate, visdat, knitr, rticles, t
 
 ```
 
-
-
 Vamos a crear una función que procese un ticket individual
-
 
 ```{r}
 
@@ -390,9 +385,7 @@ length(todos_los_tickets) #Se procesan correctamente 306
 
 ```
 
-
-
-Creamos un dataframe a parir de la lista de tickets 
+Creamos un dataframe a parir de la lista de tickets
 
 ```{r}
 # Vamos a convertir la lista de tickets en un dataframe (cada fila es un ticket y cada columna una variable).
@@ -470,18 +463,15 @@ str(df_tickets)
 
 ```
 
-
-
 Comenzamos a responder a las preguntas:
-
 
 Las preguntas que nos hemos planteado son:
 
-1. ¿Cuáles son los 5 productos más comprados? ¿Y cuántas veces ha sido comprado el qué más?
+1.  ¿Cuáles son los 5 productos más comprados? ¿Y cuántas veces ha sido comprado el qué más?
 
-2. ¿A qué tienda (calle ...) pertenecen la mayor parte de los tickets? 
+2.  ¿A qué tienda (calle ...) pertenecen la mayor parte de los tickets?
 
-3. ¿En qué horario (mañana o tarde) se hacen las compras más caras?
+3.  ¿En qué horario (mañana o tarde) se hacen las compras más caras?
 
 ```{r}
 df_tickets <- df_tickets %>%
@@ -504,8 +494,7 @@ kable(compras_por_periodo, caption = "Importe medio por periodo del día")
 
 El resultado muestra que, en promedio, las compras realizadas por la mañana son más caras (51.69€) que las realizadas por la tarde (45.64 €). La mediana también es ligeramente más alta por la mañana (36.69 € vs. 37.38 € por la tarde), aunque la diferencia en medianas es mínima.
 
-
-4. ¿Cuál ha sido el ticket más caro registrado? ¿Y el más barato?
+4.  ¿Cuál ha sido el ticket más caro registrado? ¿Y el más barato?
 
 ```{r}
 ticket_mas_caro<- df_tickets %>% arrange(desc(importe_total)) %>% head(1)
@@ -521,8 +510,8 @@ cat("El ticket más barato es", ticket_mas_barato$archivo, "con un importe de: "
 
 
 ```
-Ya hemos obtenido el ticket más caro registrado con más de 200€ de diferencia con respecto al más barato.
 
+Ya hemos obtenido el ticket más caro registrado con más de 200€ de diferencia con respecto al más barato.
 
 5.¿Cómo de frecuentes son las compras de emergencia (tickets de menos de 10€)?
 
@@ -538,7 +527,7 @@ cat("Porcentaje sobre el total:", compras_emergencia$porcentaje, "%", "\n")
 
 ```
 
-6. ¿Qué día de la semana es el que menos compras registra?
+6.  ¿Qué día de la semana es el que menos compras registra?
 
 ```{r}
 df_tickets<- df_tickets %>% filter(!is.na(fecha)) %>% mutate(dia_semana = format(fecha, "%A"))
@@ -551,3 +540,16 @@ kable(compras_por_dia, caption = "Compras por día de la semana")
 ```
 
 Obtenemos que el día de la semana en el que menos se compra es el Domingo con solamente 2 compras.
+
+
+7. ¿Qué localidad es la que acumula la mayor cantidad de dinero gastado en Mercadona, y a cuánto asciende esta cifra?
+```{r}
+df_tickets %>%
+  group_by(localidad) %>%
+  summarise(total_gastado = sum(importe_total, na.rm = TRUE)) %>%
+  arrange(desc(total_gastado)) %>%
+  slice(1)
+
+```
+Se obtiene que la localidad en la que mayor cantidad de dinero se ha gastado es Valencia con un total de 5253,03€.
+
