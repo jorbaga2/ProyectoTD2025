@@ -465,14 +465,9 @@ str(df_tickets)
 
 Comenzamos a responder a las preguntas:
 
-<<<<<<< HEAD
-Las preguntas que nos hemos planteado son:
+Respondemos a las preguntas planteadas en el enunciado del proyecto:
 
-1.  ¿Cuáles son los 5 productos más comprados? ¿Y cuántas veces ha sido comprado el qué más?
-
-2.  ¿A qué tienda (calle ...) pertenecen la mayor parte de los tickets?
-=======
-¿Cuáles son los 5 productos, de los vendidos por unidades, con más ventas ? 
+1. ¿Cuáles son los 5 productos, de los vendidos por unidades, con más ventas ? 
 ¿Cuántas unidades de cada uno se han vendido ?
 
 ```{r}
@@ -607,7 +602,7 @@ ggplot(frutas, aes(x = fecha, y = precio_kilo, color = tipo)) +
 
 ```
 
-5.- ¿ Cuál es la procedencia de los tickets ?¿ Qué ciudad/ pueblo tiene un mayor número de tickets ?
+5. ¿ Cuál es la procedencia de los tickets ?¿ Qué ciudad/ pueblo tiene un mayor número de tickets ?
 ```{r}
 tickets_por_localidad <- df_tickets %>%
   group_by(localidad) %>%
