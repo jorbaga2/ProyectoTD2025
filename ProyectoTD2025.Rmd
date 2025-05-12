@@ -576,6 +576,7 @@ Primero resolvemos las preguntas que se plantean en el enunciado del proyecto:
 ## Preguntas planteadas en el enunciado 
 
 ### Pregunta 1 
+
 ¿Cuáles son los 5 productos, de los vendidos por unidades, con más ventas ? 
 ¿Cuántas unidades de cada uno se han vendido ?
 
@@ -647,9 +648,23 @@ ggplot(todos_productos_unidades, aes(x = reorder(descripcion, -unidades_vendidas
 
 ```
 
+En la tabla vemos de forma clara los 5 productos más vendidos y la diferencia entre 
+las cantidades vendidas de cada uno.
 
 2.Si consideramos la categoría de FRUTAS Y VERDURAS. Cuáles son los 5 productos 
 más vendidos ? ¿Cuántos kilos se han vendido de cada uno de estos productos?
+
+Como en el apartado anterior hemos creado una lista con todos los productos del 
+dataframe, en esta cuestión la filtramos para encontrar aquellos productos que 
+pertenecen a la categoria FRUTAS Y VERDURAS. Esto lo hacemos gracias a que si mostramos
+el dataframe con todos los productos vemos que los que forman parte de la categoria 
+FRUTAS Y VERDURAS su nombre comienza por un 1 y después de su nombre aparece entre 
+paréntesis el precio por kilo. Tras fijarnos en esto filtramos la lista con los 
+nombres de todos los productos.
+
+Después extaremos del nombre del producto el nombre del producto y la cantidad de 
+kilos vendidos, para luego agrupar los productos por nombre, contar cuantas veces aparecen 
+y sumar los kilos totales comprados. 
 
 ```{r}
 
@@ -665,15 +680,52 @@ frutas_verduras <- frutas_verduras %>%
 frutas_verduras_mas_vendidas <- frutas_verduras %>%
   mutate(producto = str_remove(str_extract(descripcion, "^[^\\(]+"), "^1 ")) %>%
   group_by(producto) %>%
-  summarise(kilos_totales = sum(kilos_vendidos)) %>%
-  arrange(desc(kilos_totales)) %>%
+  summarise(kilos_totales = sum(kilos_vendidos, na.rm = TRUE),
+    veces_comprado = n()) 
+
+```
+
+Por último, ordenamos los datos obtenidos de manera descendente por el número de veces 
+que se ha comprado el producto, es decir, del que más veces se ha vendido al que menos
+veces se ha vendido. Después, seleccionamos las 5 primeras filas y las mostramos para 
+los 5 productos de FRUTA Y VERDURA más vendidos. 
+
+```{r}
+
+#Odenamos las frutas y verduras y cogemos las cinco primeras cinco filas
+frutas_verduras_mas_vendidas <- frutas_verduras_mas_vendidas %>% arrange(desc(veces_comprado)) %>% 
   head(5)
 
 # Ver los resultados
 print(frutas_verduras_mas_vendidas)
 
+```
+Como hablamos de peso, aunque queremos saber los cinco productos más vendidos, nos interesa 
+conocer las veces que se vende ese producto, porque el que se vende más peso no significa que 
+sea el mñas comprado, ya que se podría dar el caso que compro una unidad de un producto muy pesado, 
+pero que compro muchas unidades de un producto muy poco pesado, el más comprado sería el de poco peso. 
+
+Para observar mejor los datos obtenidos en este ejercicio representaremos los datos 
+en una gráfica junto con la cantidad de kilos que se han comprado.
+
+```{r}
+
+ggplot(frutas_verduras_mas_vendidas, aes(x = reorder(producto, -veces_comprado), 
+                                         y = veces_comprado, 
+                                         fill = producto)) +
+  geom_bar(stat = "identity") +
+  geom_text(aes(label = round(veces_comprado, 2)), vjust = -0.5, size = 4) +
+  labs(title = "Top 5 frutas y verduras más vendidos (por kilos)",
+       x = "Producto",
+       y = "Veces comprado") +
+  theme_minimal() +
+  theme(legend.position = "none",
+        axis.text.x = element_text(angle = 45, hjust = 1)) +
+  scale_fill_brewer(palette = "Set3")
 
 ```
+En la tabla vemos que el producto de la categoria FRUTAS Y VERDURAS más comprado 
+con diferencia es el plátano.
 
 3.Si consideramos la categoría de PESCADO. Cuáles son los 5 productos más vendidos?
 ¿Cuántos kilos se han vendido de cada uno de estos productos ?
