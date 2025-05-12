@@ -12,6 +12,29 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+Mini Proyecto de Análisis Exploratorio de Datos
+Emma Almenar García, Jorge Ballesteros García, Miguel Ángel Aloy Poveda, Ainhoa Larios Bea, 
+Samuel Lozada Borrás, Iker Martínez Bravo
+
+
+Índice:
+1.- Introducción
+2.- Material y métodos 
+3.- Resultados
+4.- Conclusiones
+
+
+1.- Introducción.
+En este proyecto se realiza un análisis exploratorio de datos basado en tickets de compra del supermercado Mercadona, con el objetivo de identificar patrones de consumo, tendencias en los productos adquiridos y comportamientos de los clientes. Este trabajo se estructura en varias etapas que incluyen la carga y limpieza de datos, análisis descriptivo, visualización de resultados y respuesta a preguntas clave planteadas durante el desarrollo del proyecto.
+
+1.1.- Carga de librerías y procesamiento inicial
+Para llevar a cabo el análisis, se utilizaron diversas librerías de R como pdftools, dplyr y stringr. Estas herramientas facilitan la lectura y conversión de los tickets desde formato PDF a texto procesable. El programa desarrollado incluye funciones específicas para:
+Identificar si los documentos corresponden a tickets del supermercado Mercadona.
+Extraer información clave del encabezado (nombre del supermercado, dirección, fecha, hora, etc.).
+Procesar productos listados en los tickets, incluyendo aquellos vendidos a peso.
+Capturar detalles adicionales como descuentos, IVA, método de pago o uso del parking.
+Es necesario hacer esta carga antes de empezar con el programa:
+
 Carga de librerías
 
 ```{r}
