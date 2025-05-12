@@ -559,6 +559,56 @@ print(productos_mas_vendidos_pescado)
 
 ```
 
+4. Muestra mediante un gráfico de líneas como ha variado el precio por kilo de las 
+bananas y los plátanos en los tickets disponibles, a lo largo del tiempo.
+
+```{r}
+
+library(dplyr)
+library(ggplot2)
+
+#Seleccionamos de la lista con toda la información todos los productos y su fecha de venta 
+todos_los_productos <- bind_rows(lapply(todos_los_tickets, function(ticket) {
+  if (nrow(ticket$productos) > 0) { 
+    ticket_productos <- ticket$productos
+    ticket_productos$fecha <- ticket$fecha
+    return(ticket_productos)
+  } else {
+    return(NULL)
+  }
+}))
+
+# Filtramos las bananas y los plátanos
+frutas <- todos_los_productos %>% filter(str_detect(tolower(descripcion), "banana|platano")) 
+
+
+#Seleccionamos el precio del kilo que se encuentra al lado del nombre del producto
+frutas <- frutas %>% 
+  mutate(precio_kilo = as.numeric(str_extract(descripcion, "(?<=a )\\d+\\.\\d{2}"))) 
+
+#Comprobamos que las fechas se encuntren en el formato correcto
+frutas$fecha <- as.Date(frutas$fecha, format = "%d/%m/%Y") 
+
+# Normalizamos los nombres (banana vs platano)
+frutas <- frutas %>%
+  mutate(tipo = case_when(
+    str_detect(tolower(descripcion), "banana") ~ "Banana",
+    str_detect(tolower(descripcion), "platano") ~ "Platano"
+  ))
+
+# Creamos la gráfica con la evolución del precio por kilo
+ggplot(frutas, aes(x = fecha, y = precio_kilo, color = tipo)) +
+  geom_line() +
+  labs(
+    title = "Variación del precio por kilo: Bananas vs Plátanos",
+    x = "Fecha",
+    y = "Precio por kilo (€)",
+    color = "Producto"
+  ) +
+  theme_minimal()
+
+```
+
 Las preguntas que nos hemos planteado son:
 
 1. ¿Cuáles son los 5 productos más comprados? ¿Y cuántas veces ha sido comprado el qué más?
