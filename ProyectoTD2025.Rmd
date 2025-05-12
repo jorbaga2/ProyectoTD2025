@@ -12,6 +12,29 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+Mini Proyecto de Análisis Exploratorio de Datos
+Emma Almenar García, Jorge Ballesteros García, Miguel Ángel Aloy Poveda, Ainhoa Larios Bea, 
+Samuel Lozada Borrás, Iker Martínez Bravo
+
+
+Índice:
+1.- Introducción
+2.- Material y métodos 
+3.- Resultados
+4.- Conclusiones
+
+
+1.- Introducción.
+En este proyecto se realiza un análisis exploratorio de datos basado en tickets de compra del supermercado Mercadona, con el objetivo de identificar patrones de consumo, tendencias en los productos adquiridos y comportamientos de los clientes. Este trabajo se estructura en varias etapas que incluyen la carga y limpieza de datos, análisis descriptivo, visualización de resultados y respuesta a preguntas clave planteadas durante el desarrollo del proyecto.
+
+1.1.- Carga de librerías y procesamiento inicial
+Para llevar a cabo el análisis, se utilizaron diversas librerías de R como pdftools, dplyr y stringr. Estas herramientas facilitan la lectura y conversión de los tickets desde formato PDF a texto procesable. El programa desarrollado incluye funciones específicas para:
+Identificar si los documentos corresponden a tickets del supermercado Mercadona.
+Extraer información clave del encabezado (nombre del supermercado, dirección, fecha, hora, etc.).
+Procesar productos listados en los tickets, incluyendo aquellos vendidos a peso.
+Capturar detalles adicionales como descuentos, IVA, método de pago o uso del parking.
+Es necesario hacer esta carga antes de empezar con el programa:
+
 Carga de librerías
 
 ```{r}
@@ -23,6 +46,38 @@ pacman::p_load(pdftools, tidyverse, readxl, lubridate, visdat, knitr, rticles, t
 
 
 ```
+
+1.2.- Características generales del conjunto de los datos.
+
+Los datos procesados corresponden a 355 tickets (no todos ellos válidos) obtenidos a partir de archivos PDF. Cada ticket contiene información organizada en las siguientes variables principales:
+
+Encabezado: Información del supermercado (nombre, dirección, localidad), fecha y hora de la compra.
+Productos: Detalles sobre cada producto adquirido (cantidad, descripción, precio unitario e importe total).
+Totales: Subtotal, IVA, descuentos aplicados e importe total del ticket.
+Extras: Datos sobre donaciones realizadas, uso del parking (hora de entrada y salida) y método de pago.
+
+1.3.- Análisis de valores faltantes.
+
+Se utilizó la librería VIM para analizar los valores faltantes (NA) en el dataset. Los principales hallazgos incluyen:
+Algunos tickets no contenían información completa sobre las categorías de productos.
+En ciertos casos, el precio unitario o la cantidad estaban ausentes debido a errores en el registro.
+Para abordar estos problemas, se aplicaron reglas específicas:
+Los registros con precios unitarios faltantes fueron eliminados si no era posible imputar un valor razonable.
+Los valores NA en las categorías fueron imputados utilizando patrones observados en otros registros similares.
+
+1.4.- Preguntas planteadas.
+
+El análisis busca responder a preguntas clave relacionadas con los patrones de compra como las siguientes:
+¿Cuáles son los 5 productos más comprados? ¿Y cuántas veces ha sido comprado el qué más?
+¿Qué días presentan mayor volumen de ventas? ¿Se observan picos específicos durante la semana?
+ ¿Qué producto aparece más veces en tickets de más de 100 €?
+¿Cuál es la mayor cantidad pagada de impuestos y en qué localización se ha producido?
+¿Qué día de la semana es el que menos compras registra?
+
+2.- Métodos y materiales.
+
+
+
 
 Vamos a crear una función que procese un ticket individual
 
@@ -463,7 +518,13 @@ str(df_tickets)
 
 ```
 
-Comenzamos a responder a las preguntas:
+3.- Resultados
+
+Una vez que los datos de los tickets han sido correctamente almacenados y etiquetados en nuestro data frame, iniciamos el proceso de análisis para extraer información significativa. Este análisis nos permite identificar tendencias de compra, patrones de consumo, comportamientos recurrentes de los clientes y otras curiosidades que, a simple vista, podrían pasar desapercibidas.
+
+Estas preguntas no solo nos permiten interpretar el presente, sino por ejemplo también permiten a las empresas como Mercadona anticipar tendencias futuras, mejorar la experiencia del cliente, ajustar estrategias de precios y promociones, y, en última instancia, aumentar la eficiencia operativa y la rentabilidad del negocio.
+
+Por ello, nos hemos planteado ciertas preguntas que contestaremos con la informacion de los tickets recopilados.
 
 Respondemos a las preguntas planteadas en el enunciado del proyecto:
 
