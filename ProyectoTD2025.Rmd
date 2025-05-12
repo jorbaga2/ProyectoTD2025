@@ -766,11 +766,30 @@ Obtenemos que el día de la semana en el que menos se compra es el Domingo con s
 
 7. ¿Qué localidad es la que acumula la mayor cantidad de dinero gastado en Mercadona, y a cuánto asciende esta cifra?
 ```{r}
-df_tickets %>%
+
+# Filtrar las 10 localidades con mayor gasto
+top_10_localidades <- df_tickets %>%
   group_by(localidad) %>%
   summarise(total_gastado = sum(importe_total, na.rm = TRUE)) %>%
   arrange(desc(total_gastado)) %>%
-  slice(1)
+  slice_head(n = 10)
+
+# Identificar la localidad con mayor gasto
+mayor_localidad <- top_10_localidades %>%
+  slice_max(total_gastado)
+
+# Crear el gráfico
+ggplot(top_10_localidades, aes(x = reorder(localidad, total_gastado), y = total_gastado, fill = localidad)) +
+  geom_bar(stat = "identity") +
+  # Mostrar los valores encima de todas las barras
+  geom_text(aes(label = paste0(round(total_gastado, 2), " €")),
+            vjust = -0.5, size = 2.7) +
+  labs(title = "Top 10 localidades con mayor gasto en Mercadona",
+       x = "Localidad",
+       y = "Total gastado (€)") +
+  scale_fill_brewer(palette = "Paired") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
 ```
 Se obtiene que la localidad en la que mayor cantidad de dinero se ha gastado es Valencia con un total de 5253,03€.
@@ -778,21 +797,103 @@ Se obtiene que la localidad en la que mayor cantidad de dinero se ha gastado es 
 
 8. ¿Cuántos tickets se emiten entre las 9:00 y las 10:30 am comparado con el tramo de las 19:00-21:30?
 ```{r}
+
 # Extraer hora y minuto desde la columna tipo Period
 df_tickets <- df_tickets %>%
   mutate(
     hora_num = hour(hora) + minute(hora)/60  # convierte a decimal para comparar fácilmente
   )
 
-# Filtrar por tramos horarios
-entre_9_y_10_30 <- df_tickets %>% filter(hora_num >= 9, hora_num <= 10.5) %>% nrow()
-entre_19_y_21_30 <- df_tickets %>% filter(hora_num >= 19, hora_num <= 21.5) %>% nrow()
+# Filtrar por tramos horarios y contar los tickets en cada tramo
+tickets_por_tramo <- tibble(
+  tramo_horario = c("9:00 - 10:30", "19:00 - 21:30"),
+  cantidad_tickets = c(
+    nrow(df_tickets %>% filter(hora_num >= 9, hora_num <= 10.5)),
+    nrow(df_tickets %>% filter(hora_num >= 19, hora_num <= 21.5))
+  )
+)
 
-cat("Tickets entre 9:00 y 10:30:", entre_9_y_10_30, "\n")
-cat("Tickets entre 19:00 y 21:30:", entre_19_y_21_30, "\n")
+# Mostrar los resultados
+print(tickets_por_tramo)
+
+# Crear el gráfico comparativo
+ggplot(tickets_por_tramo, aes(x = tramo_horario, y = cantidad_tickets, fill = tramo_horario)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Comparación de tickets emitidos en tramos horarios",
+       x = "Tramo horario",
+       y = "Cantidad de tickets") +
+  scale_fill_manual(values = c("skyblue", "salmon")) +  #
+  theme_minimal()  
+
 
 ```
 Si comparamos los tickets que se emiten entre las 9:00-10:00 y entre las 19:00-21:30 podemos ver que se emiten muchos más tickets entre 19:00-21:30, emitiéndose un poco más de 10 veces lo que se emite por la mañana.
+
+9. ¿Qué producto aparece más veces en tickets de más de 100 €?
+```{r}
+
+# Código corregido para obtener el top 5 de productos
+top5_productos <- todos_los_tickets %>%
+    # Filtramos solo tickets con importe_total > 100
+    purrr::keep(~ .x$importe_total > 100) %>%
+    # Extraemos las tablas de productos
+    purrr::map_df(~ .x$productos) %>%
+    # Agrupamos por descripción del producto y contamos
+    group_by(descripcion) %>%
+    summarise(total = sum(cantidad, na.rm = TRUE), .groups = "drop") %>%
+    arrange(desc(total)) %>%
+    slice_head(n = 5)  # Tomamos los 5 productos más comprados
+
+# Mostrar el top 5
+print(top5_productos)
+
+# Crear el gráfico de barras para los 5 productos más comprados
+ggplot(top5_productos, aes(x = reorder(descripcion, total), y = total, fill = descripcion)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Top 5 productos más comprados en compras mayores a 100€",
+       x = "Producto",
+       y = "Cantidad total") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +  # Rotar las etiquetas del eje x para mejor legibilidad
+  scale_fill_brewer(palette = "Set3") 
+
+```
+El producto que más aparece en las compras superiores a 100€ es el espárrago verde fino, con un total de 17 compras distintas con un importe superior a 100€.
+
+10. ¿Cuántas veces se ha comprado queso?
+
+```{r}
+
+# Filtrar las filas que comienzan con "Queso"
+productos_queso <- todos_los_productos[grepl("^Queso", todos_los_productos$descripcion, ignore.case = TRUE), ]
+
+# Agrupar por descripción exacta y contar cuántas veces aparece cada línea
+productos_queso_agrupado <- productos_queso %>%
+  group_by(descripcion) %>%
+  summarise(cantidad_total = sum(cantidad))
+
+# Ordenar los resultados por la cantidad total
+productos_queso_agrupado <- productos_queso_agrupado %>%
+  arrange(desc(cantidad_total))
+
+# Calcular el total de todos los quesos
+total_quesos <- sum(productos_queso_agrupado$cantidad_total)
+
+# Mostrar el total de quesos
+print(paste("Total de quesos: ", total_quesos))
+
+# Crear el gráfico
+ggplot(productos_queso_agrupado, aes(x = reorder(descripcion, cantidad_total), y = cantidad_total)) +
+  geom_bar(stat = "identity", fill = "skyblue") +
+  labs(title = "Cantidad total de quesos por tipo y marca",
+       x = "Descripción del queso",
+       y = "Cantidad total") +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))  # Rotar las etiquetas del eje x
+
+
+```
+Podemos ver que el total de quesos comprados en estos ticket es de 227.
+
+
 
 <<<<<<< HEAD
 =======
@@ -818,6 +919,22 @@ if (!is.na(indice_max_iva) && indice_max_iva > 0) {
   cat("No se pudo determinar la mayor cantidad pagada de impuestos.\n")
 }
 
+# Vamos a representarlo en un gráfico
+# Agrupamos por localidad y sumamos el IVA total pagado
+iva_por_localidad <- df_tickets %>%
+  group_by(localidad) %>%
+  summarise(total_IVA = sum(IVA, na.rm = TRUE)) %>%
+  arrange(desc(total_IVA))
+
+# Creamos el gráfico de barras
+ggplot(iva_por_localidad, aes(x = localidad, y = total_IVA, fill = localidad)) +
+  geom_bar(stat = "identity") +
+  coord_flip() +
+  labs(title = "Cantidad total de IVA pagado por localidad", x = "Localidad", y = "Total IVA (€)") +
+  theme_minimal() +
+  theme(legend.position = "none") +
+  scale_fill_viridis_d()  
+
 ```
 
  
@@ -837,11 +954,47 @@ cat("El producto más caro es:", producto_mas_caro$descripcion,
     "con un importe de:", producto_mas_caro$importe, "€\n")
 
 
+# Vamos a representarlo en un gráfico
+# Seleccionamos los 4 productos más caros
+top_productos <- df_productos %>% arrange(desc(importe)) %>% head(4)
+
+# Creamos el gráfico de barras
+ggplot(top_productos, aes(x = reorder(descripcion, importe), y = importe, fill = descripcion)) +
+  geom_bar(stat = "identity") +
+  coord_flip() +  
+  labs(title = "Top 4 productos más caros", x = "Producto", y = "Importe (€)") +
+  theme_minimal() +
+  theme(legend.position = "none") +
+  scale_fill_brewer(palette = "Set3")
+
 ```
 
  
 13. ¿Qué días presentan mayor volumen de ventas? ¿Se observan picos específicos durante la semana?
+```{r}
 
+# Comprobamos que la columna fecha está en formato de fecha
+df_tickets <- df_tickets %>%
+  filter(!is.na(fecha)) %>%
+  mutate(dia_semana = weekdays(fecha, abbreviate = FALSE)) 
+
+# Contamos las compras por día 
+ventas_por_dia <- df_tickets %>%
+  group_by(dia_semana) %>%
+  summarise(n_compras = n()) %>%
+  arrange(desc(n_compras)) # Ordenamos de mayor a menor volumen de ventas
+
+# Resultados
+kable(ventas_por_dia, caption = "Número de compras por día de la semana")
+
+
+# Creamos un gráfico de barras por número de compras
+ggplot(ventas_por_dia, aes(x = factor(dia_semana, levels = c("lunes", "martes", "miércoles", "jueves", "viernes", "sábado", "domingo")), y = n_compras, fill = dia_semana)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Número de compras por día de la semana", x = "Día de la semana", y = "Número de compras") 
+
+```
+Sí que se observan picos durante la semana. En el gráfico podemos ver cómo el sábado es el día con mayor número de compras, esto sugiere que las pernonas pueden tender más a realizar compras los sábados para abastecerse para la semana siguiente, a esto lo sigue el lunes. En cambio, el día con menor número de compras, a excepción del domingo que suelen estar cerrados los supermecados, es el jueves.
  
  
 >>>>>>> e0d38cec7134a564885ae4e842a99a90ec1d6d32
