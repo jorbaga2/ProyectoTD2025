@@ -806,9 +806,14 @@ ggplot(pescados_mas_vendidos, aes(x = reorder(producto, -veces_comprado),
   scale_fill_brewer(palette = "Set3")
 
 ```
+### Pregunta 4
 
-4. Muestra mediante un gráfico de líneas como ha variado el precio por kilo de las 
+Muestra mediante un gráfico de líneas como ha variado el precio por kilo de las 
 bananas y los plátanos en los tickets disponibles, a lo largo del tiempo.
+
+Para este ejercicio vaolvemos a crear la lista con todos los proyectos junto a su 
+fecha de compra, porque tenemos que estudiar la evolución de los precios con el tiempo.
+Después filtramos los productos para seleccionar solo los plátanos y bananas. 
 
 ```{r}
 
@@ -829,7 +834,12 @@ todos_los_productos <- bind_rows(lapply(todos_los_tickets, function(ticket) {
 # Filtramos las bananas y los plátanos
 frutas <- todos_los_productos %>% filter(str_detect(tolower(descripcion), "banana|platano")) 
 
+```
+ 
+Después, seleccionamos y guardamos el precio del kilo del los platanos y bananas
+del nombre del producto en cada fecha. Además de comprobar que la fecha está en formato correcto. 
 
+```{r}
 #Seleccionamos el precio del kilo que se encuentra al lado del nombre del producto
 frutas <- frutas %>% 
   mutate(precio_kilo = as.numeric(str_extract(descripcion, "(?<=a )\\d+\\.\\d{2}"))) 
@@ -844,6 +854,13 @@ frutas <- frutas %>%
     str_detect(tolower(descripcion), "platano") ~ "Platano"
   ))
 
+```
+
+Por último, como nos pide el enunciado creamos un gráfico de líneas para observar 
+la evolución del precio del kilo de la banana y el platano. 
+
+```{r}
+
 # Creamos la gráfica con la evolución del precio por kilo
 ggplot(frutas, aes(x = fecha, y = precio_kilo, color = tipo)) +
   geom_line() +
@@ -856,6 +873,10 @@ ggplot(frutas, aes(x = fecha, y = precio_kilo, color = tipo)) +
   theme_minimal()
 
 ```
+En la gráfica, observamos que el precio del plátano es bastante irregular y que tuvo 
+una crecida muy grande en verano del 2024. En cambio, la banana tiene un precio muy regular 
+excepto a finales de 2025 que tuvo una pequeña bajada. 
+
 
 5. ¿ Cuál es la procedencia de los tickets ?¿ Qué ciudad/ pueblo tiene un mayor número de tickets ?
 ```{r}
