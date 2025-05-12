@@ -776,6 +776,25 @@ df_tickets %>%
 ```
 Se obtiene que la localidad en la que mayor cantidad de dinero se ha gastado es Valencia con un total de 5253,03€.
 
+
+8. ¿Cuántos tickets se emiten entre las 9:00 y las 10:30 am comparado con el tramo de las 19:00-21:30?
+```{r}
+# Extraer hora y minuto desde la columna tipo Period
+df_tickets <- df_tickets %>%
+  mutate(
+    hora_num = hour(hora) + minute(hora)/60  # convierte a decimal para comparar fácilmente
+  )
+
+# Filtrar por tramos horarios
+entre_9_y_10_30 <- df_tickets %>% filter(hora_num >= 9, hora_num <= 10.5) %>% nrow()
+entre_19_y_21_30 <- df_tickets %>% filter(hora_num >= 19, hora_num <= 21.5) %>% nrow()
+
+cat("Tickets entre 9:00 y 10:30:", entre_9_y_10_30, "\n")
+cat("Tickets entre 19:00 y 21:30:", entre_19_y_21_30, "\n")
+
+```
+Si comparamos los tickets que se emiten entre las 9:00-10:00 y entre las 19:00-21:30 podemos ver que se emiten muchos más tickets entre 19:00-21:30, emitiéndose un poco más de 10 veces lo que se emite por la mañana.
+
 <<<<<<< HEAD
 =======
 
