@@ -554,22 +554,39 @@ str(df_tickets)
 
 ```
 
-3.- Resultados
+# Resolución de las cuestiones planteadas
 
-Una vez que los datos de los tickets han sido correctamente almacenados y etiquetados en nuestro data frame, iniciamos el proceso de análisis para extraer información significativa. Este análisis nos permite identificar tendencias de compra, patrones de consumo, comportamientos recurrentes de los clientes y otras curiosidades que, a simple vista, podrían pasar desapercibidas.
+Una vez que los datos de los tickets han sido correctamente almacenados y etiquetados 
+en nuestro data frame, iniciamos el proceso de análisis para extraer información 
+significativa. Este análisis nos permite identificar tendencias de compra, patrones 
+de consumo, comportamientos recurrentes de los clientes y otras curiosidades que, 
+a simple vista, podrían pasar desapercibidas.
 
-Estas preguntas no solo nos permiten interpretar el presente, sino por ejemplo también permiten a las empresas como Mercadona anticipar tendencias futuras, mejorar la experiencia del cliente, ajustar estrategias de precios y promociones, y, en última instancia, aumentar la eficiencia operativa y la rentabilidad del negocio.
+Estas preguntas no solo nos permiten interpretar el presente, sino por ejemplo 
+también permiten a las empresas como Mercadona anticipar tendencias futuras, 
+mejorar la experiencia del cliente, ajustar estrategias de precios y promociones, 
+y, en última instancia, aumentar la eficiencia operativa y la rentabilidad del 
+negocio.
 
-Por ello, nos hemos planteado ciertas preguntas que contestaremos con la informacion de los tickets recopilados.
+Por ello, nos hemos planteado ciertas preguntas que contestaremos con la informacion 
+de los tickets recopilados.
 
-Respondemos a las preguntas planteadas en el enunciado del proyecto:
+Primero resolvemos las preguntas que se plantean en el enunciado del proyecto:
 
-1. ¿Cuáles son los 5 productos, de los vendidos por unidades, con más ventas ? 
+## Preguntas planteadas en el enunciado 
+
+### Pregunta 1 
+¿Cuáles son los 5 productos, de los vendidos por unidades, con más ventas ? 
 ¿Cuántas unidades de cada uno se han vendido ?
+
+Para la resolución de esta cuestión primero creamos una lista con todos los 
+productos de los tickets del dataframe para poder trabajar sobre ella. Después 
+filtraremos la lista por aquellos productos que se venden por unidades y los agruparemos 
+por nombre para luego hacer un recuento de cuantas veces se ha comprado ese producto.
 
 ```{r}
 
-#Creamos una lista con todos los productos de los tickets del dataframe
+#Creamos la lista con todos los productos del dataframe
 todos_los_productos <- bind_rows(lapply(todos_los_tickets, function(ticket) ticket$productos))
 
 #Filtramos los productos a aquellos que se venden por unidades
@@ -581,19 +598,55 @@ todos_productos_unidades <- todos_los_productos %>% filter(
 #Agrupamos los productos por nombre
 todos_productos_unidades <- todos_productos_unidades %>% group_by(descripcion)
 
-#Sumamos las cantidades de todos los productos que tienen el mismo nombre
+#Contamos la cantidad de veces que se compran todos los productos que tienen el mismo nombre
 todos_productos_unidades <- todos_productos_unidades %>% summarise(unidades_vendidas = sum(cantidad, na.rm = TRUE)) 
 
+```
+
+Ahora para visualizamos en forma de tabla los cinco productos que se venden por unidades 
+más vendidos. Para ello, ordenamos los productos en orden descendente por la cantidad 
+de veces que se ha vendido, es decir, ordenamos los productos del más vendido al 
+menos vendido; y, por último, mostramos las primeras cinco filas de la tabla para 
+mostrar los cinco porductos más vendidos.
+
+```{r}
 #Ordenamos los productos de manera descendente
 todos_productos_unidades <- todos_productos_unidades %>% arrange(desc(unidades_vendidas)) 
 
 #Cogemos los cinco primeros productos de la tabla
 todos_productos_unidades <- todos_productos_unidades %>% slice_head(n = 5)
 
-#Mostramos los cinco productos comprados por unidades más vendidos.
+#Mostramos la tabla
 print(todos_productos_unidades)
 
 ```
+En la tabla podemos observar que el producto más vendido en los tickets analizados 
+es el atun claro de oliva con 62 unidades vendidas. También podemos observar que 
+mucha gente no lleva bolsa a la compra y pide una al pagar porque el tercer producto
+más vendido son las bolsas de plástico con 50 unidades vendidas. 
+
+Para observar mejor los datos anteriores, representamos la información anterior en
+un gráfico de barras
+
+```{r}
+
+library(ggplot2)
+
+# Creamos la gráfica
+ggplot(todos_productos_unidades, aes(x = reorder(descripcion, -unidades_vendidas), 
+                                     y = unidades_vendidas, 
+                                     fill = descripcion)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Top 5 productos más vendidos por unidades",
+       x = "Producto",
+       y = "Unidades vendidas") +
+  theme_minimal() +
+  theme(legend.position = "none") +  # Oculta la leyenda (porque los colores ya están en el eje x)
+  scale_fill_brewer(palette = "Set2")  # Paleta de colores agradable
+
+
+```
+
 
 2.Si consideramos la categoría de FRUTAS Y VERDURAS. Cuáles son los 5 productos 
 más vendidos ? ¿Cuántos kilos se han vendido de cada uno de estos productos?
