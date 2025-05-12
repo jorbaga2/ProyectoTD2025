@@ -655,20 +655,30 @@ Las preguntas que nos hemos planteado son:
 
 1. ¿Cuáles son los 5 productos más comprados? ¿Y cuántas veces ha sido comprado el qué más?
 ```{r}
-top_productos <- todos_los_productos %>%
+top10_productos <- todos_los_productos %>%
   group_by(descripcion) %>%
   summarise(total_comprado = sum(cantidad, na.rm = TRUE)) %>%
   arrange(desc(total_comprado)) %>%
-  slice_head(n = 5) 
-
-print(top_productos)
+  slice_head(n = 10)
 
 
-producto_mas_comprado <- top_productos %>% slice(1)
+print(top10_productos)
+
+top5_productos <- todos_los_productos %>%
+  group_by(descripcion) %>%
+  summarise(total_comprado = sum(cantidad, na.rm = TRUE)) %>%
+  arrange(desc(total_comprado)) %>%
+  slice_head(n = 5)
+
+
+print(top5_productos)
+
+producto_mas_comprado <- top5_productos %>% slice(1)
 cat("El producto más comprado es:", producto_mas_comprado$descripcion, 
     "con", producto_mas_comprado$total_comprado, "unidades compradas.\n")
 ```
-El que mas, que es el ATUN CLARO OLIVA, se ha comprado 62 veces.
+Los 5 poductos mas vendidos son el Atun Claro Oliva, el Queso Lonchas Cabra, la BOLSA PLASTICO,	
+la LECHE DESNAT. CALCIO y el YOGUR COCO. El que mas, que es el ATUN CLARO OLIVA, se ha comprado 62 veces.
 
 
 2. ¿A qué tienda (calle ...) pertenecen la mayor parte de los tickets? 
