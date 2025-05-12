@@ -74,7 +74,10 @@ El análisis busca responder a preguntas clave relacionadas con los patrones de 
 ¿Cuál es la mayor cantidad pagada de impuestos y en qué localización se ha producido?
 ¿Qué día de la semana es el que menos compras registra?
 
-2.-Métodos y materiales.
+2.- Métodos y materiales.
+
+
+
 
 Vamos a crear una función que procese un ticket individual
 
@@ -514,6 +517,12 @@ str(df_tickets)
 
 
 ```
+
+3.- Resultados
+
+Una vez que los datos de los tickets han sido correctamente almacenados y etiquetados en nuestro data frame, iniciamos el proceso de análisis para extraer información significativa. Este análisis nos permite identificar tendencias de compra, patrones de consumo, comportamientos recurrentes de los clientes y otras curiosidades que, a simple vista, podrían pasar desapercibidas.
+
+Estas preguntas no solo nos permiten interpretar el presente, sino por ejemplo también permiten a las empresas como Mercadona anticipar tendencias futuras, mejorar la experiencia del cliente, ajustar estrategias de precios y promociones, y, en última instancia, aumentar la eficiencia operativa y la rentabilidad del negocio.
 
 Comenzamos a responder a las preguntas:
 
