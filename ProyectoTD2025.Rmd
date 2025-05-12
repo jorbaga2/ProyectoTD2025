@@ -4,8 +4,15 @@ author: Jorge Ballesteros García, Emma Almenar García, Miguel Angel Aloy Poved
   Larios Bea, Samuel Lozada Borrás, Iker Martínez Bravo
 date: "2025-04-07"
 output:
-  html_document: default
-  pdf_document: default
+  html_document:
+    echo: yes
+    number_sections: no
+    theme: lumen
+    toc: yes
+  pdf_document:
+    toc: yes
+    toc_depth: 3
+    number_sections: no
 ---
 
 ```{r setup, include=FALSE}
