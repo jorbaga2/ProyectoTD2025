@@ -532,6 +532,32 @@ print(productos_mas_vendidos)
 
 ```
 
+3.Si consideramos la categoría de PESCADO. Cuáles son los 5 productos más vendidos?
+¿Cuántos kilos se han vendido de cada uno de estos productos ?
+
+```{r}
+
+# Filtramos los productos que pertenecen a la categoria pescado de la lista de todos
+#los productos
+pescado <- todos_los_productos %>%
+  filter(str_detect(descripcion, "^((?!^1).)*\\(.*kg.*\\)"))
+
+# Extraemos los kilos vendidos de la descripción
+pescado <- pescado %>%
+  mutate(kilos_vendidos = as.numeric(str_extract(descripcion, "(?<=\\()\\d+\\.\\d{3}")))
+
+# Agrupamos por nombre del producto y sumamos los kilos vendidos
+pescados_mas_vendidos <- pescado %>%
+  mutate(producto = str_extract(descripcion, "^[^\\(]+")) %>%
+  group_by(producto) %>%
+  summarise(kilos_totales = sum(kilos_vendidos)) %>%
+  arrange(desc(kilos_totales)) %>%
+  head(5)
+
+# Mostramos los 5 pescados más vendidos junto a los kilos totales vendidos
+print(productos_mas_vendidos_pescado)
+
+```
 
 Las preguntas que nos hemos planteado son:
 
