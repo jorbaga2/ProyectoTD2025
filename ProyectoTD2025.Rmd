@@ -1010,8 +1010,9 @@ ningún Mercadona (excepto ciertos casos muy concretos), deberíamos cerrar el j
 ya que es el dia que menos compras se registran.
 
 
+## Preguntas planteadas por nosotros. 
 
-Las preguntas que nos hemos planteado son:
+Tras analizar los datos obtenidos y resolver las preguntas anteriores nos hemos planteado las siguientes: 
 
 1. ¿Cuáles son los 5 productos más comprados? ¿Y cuántas veces ha sido comprado el qué más?
 ```{r}
@@ -1041,43 +1042,63 @@ Los 5 poductos mas vendidos son el Atun Claro Oliva, el Queso Lonchas Cabra, la 
 la LECHE DESNAT. CALCIO y el YOGUR COCO. El que mas, que es el ATUN CLARO OLIVA, se ha comprado 62 veces.
 
 
-2. ¿A qué tienda (calle ...) pertenecen la mayor parte de los tickets? 
+### Pregunta 1 
+
+¿A qué tienda (calle ...) pertenecen la mayor parte de los tickets? 
+
+Queremos saber cual es la dirección donde se han realizado más compras. Para ello,
+del dataframe cogemos las direcciones y las agrupamos por nombre. Después contamos 
+el número de veces en las que aparece esa dirección. Por último, ordenamos los tickets 
+de mayor a menor, asi seleccionamos la primera fila de la tabla que hemos creado, y 
+vemos la dirección del Mercadona donde más compras se han relizado. 
+
 ```{r}
+
 tickets_por_direccion <- df_tickets %>%
   group_by(direccion) %>%
-  summarise(num_tickets = n()) %>%
+  summarise(
+    localidad = first(localidad),      
+    num_tickets = n()
+  ) %>%
   arrange(desc(num_tickets))
 
-
+#Mostramos la dirección donde más se ha comprado 
 direccion_top <- tickets_por_direccion %>% slice(1)
 
+
+#Mostramos una tabla con todas las direcciones 
 print(tickets_por_direccion) 
 direccion_top
-```
-La tienda (calle) con mayor número de tickets es: C/ QUART 120 con 51 tickets.
 
-3.  ¿En qué horario (mañana o tarde) se hacen las compras más caras?
+```
+Para observar mejor la información obtenida, realizamos una gráfica de barras. 
 
 ```{r}
-df_tickets <- df_tickets %>%
-  mutate(
-    periodo_dia = ifelse(hour(hora) < 12, "Mañana", "Tarde")
+
+library(ggplot2)
+
+# Creamos una nueva columna para combinar dirección y localidad (etiqueta completa)
+tickets_por_direccion <- tickets_por_direccion %>%
+  mutate(etiqueta = paste(direccion, "(", localidad, ")"))
+
+# Graficamos
+ggplot(tickets_por_direccion, aes(x = reorder(etiqueta, -num_tickets), y = num_tickets)) +
+  geom_bar(stat = "identity", fill = "darkorange") +
+  labs(
+    title = "Número de tickets por dirección",
+    x = "Dirección (Localidad)",
+    y = "Número de tickets"
+  ) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 90, hjust = 1)
   )
-
-compras_por_periodo <- df_tickets %>% filter(!is.na(periodo_dia)) %>%
-  group_by(periodo_dia) %>%
-  summarise(
-    media_importe = mean(importe_total, na.rm = TRUE),
-    mediana_importe = median(importe_total, na.rm = TRUE)
-  )
-
-kable(compras_por_periodo, caption = "Importe medio por periodo del día")
-
 
 
 ```
 
-El resultado muestra que, en promedio, las compras realizadas por la mañana son más caras (51.69€) que las realizadas por la tarde (45.64 €). La mediana también es ligeramente más alta por la mañana (36.69 € vs. 37.38 € por la tarde), aunque la diferencia en medianas es mínima.
+Observamos que la tienda (calle) con mayor número de tickets es C/ QUART 120 de 
+valencia con 51 tickets.
 
 4.  ¿Cuál ha sido el ticket más caro registrado? ¿Y el más barato?
 
