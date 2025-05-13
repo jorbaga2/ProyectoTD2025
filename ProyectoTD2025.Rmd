@@ -4,26 +4,18 @@ author: Jorge Ballesteros García, Emma Almenar García, Miguel Angel Aloy Poved
   Larios Bea, Samuel Lozada Borrás, Iker Martínez Bravo
 date: "2025-04-07"
 output:
+  pdf_document:
+    toc: true
+    toc_depth: 3
+    number_sections: false
   html_document:
     echo: true
     number_sections: false
     theme: lumen
-<<<<<<< HEAD
     toc: yes
-  pdf_document:
-    toc: yes
-    toc_depth: 3
-    number_sections: no
-=======
-    toc: true
-  pdf_document:
-    toc: true
-    toc_depth: 3
-    number_sections: false
   word_document:
     toc: true
     toc_depth: '3'
->>>>>>> 33317d74bb75aadd2c2ad9dbef03030be3734c3c
 ---
 
 ```{r setup, include=FALSE}
@@ -706,11 +698,6 @@ frutas_verduras_mas_vendidas <- frutas_verduras %>%
     kilos_totales = sum(kilos_vendidos))  %>%
   arrange(desc(kilos_totales)) %>%
   head(5)
-<<<<<<< HEAD
-  summarise(kilos_totales = sum(kilos_vendidos, na.rm = TRUE),
-    veces_comprado = n()) 
-=======
->>>>>>> d47bda05c5aeda6f3818c0935aa3b3fc17d01279
 
 ```
 
@@ -1023,11 +1010,10 @@ ya que es el dia que menos compras se registran.
 
 ## Preguntas planteadas por nosotros. 
 
-<<<<<<< HEAD
 Tras analizar los datos obtenidos y resolver las preguntas anteriores nos hemos planteado las siguientes: 
-=======
+
 Tras analizar los datos obtenidos y resolver las preguntas anteriores nos hemos planteado las siguientes preguntas: 
->>>>>>> d47bda05c5aeda6f3818c0935aa3b3fc17d01279
+
 
 ### Pregunta 1 
 
@@ -1283,7 +1269,7 @@ y hacemos un recuento.
 # Código corregido para obtener el top 5 de productos
 top5_productos <- todos_los_tickets %>%
     # Filtramos solo tickets con importe_total > 100
-    purrr::keep(~ .x$importe_total > 100) %>%
+    purrr::keep(~ !is.na(.x$importe_total) && .x$importe_total > 100) %>%
     # Extraemos las tablas de productos
     purrr::map_df(~ .x$productos) %>%
     # Agrupamos por descripción del producto y contamos
@@ -1461,9 +1447,6 @@ ggplot(top_productos, aes(x = reorder(descripcion, importe), y = importe, fill =
 
 Vemos que el producto más caro es el ALISTADO MEDIANO.
 
-
-<<<<<<< HEAD
-
 ### Pregunta 11
 
 ¿Cómo ha evolucionado el gasto a lo largo del tiempo?
@@ -1555,12 +1538,10 @@ de tickets proviene de compras exclusivamente con tarjeta. Este resultado puede
 indicar un patrón de comportamiento del consumidor que muestra una preferencia clara 
 por el uso de tarjeta frente al efectivo.
 
-
  
 #Resumen
 
 Tras la creación de la función, la lectura de los tickets de compra del Mercadona en formato PDF y el análisis de
 los datos obtenidos podemos decir que el día de la semana en que más se compra es el sábado y el que menos el jueves (contando que el domingo está cerrado), que el producto más comprado en unidades es el atun en lata y la fruta más comprada el plátano y que la localidad donde más se ha comprado es en Valencia.
-=======
->>>>>>> d47bda05c5aeda6f3818c0935aa3b3fc17d01279
+
  
