@@ -1218,7 +1218,14 @@ kable(compras_por_dia, caption = "Compras por día de la semana")
 
 Obtenemos que el día de la semana en el que menos se compra es el Domingo con solamente 2 compras.
 
-7. ¿Qué localidad es la que acumula la mayor cantidad de dinero gastado en Mercadona, y a cuánto asciende esta cifra?
+### Pregunta 5
+
+¿Qué localidad es la que acumula la mayor cantidad de dinero gastado en Mercadona,
+y a cuánto asciende esta cifra?
+
+Queremos saber en que localidad se gasta más dinero en el supermercado Mercadona. Para ello,
+agrupamos los tickets por localidad y sumamos la cantidad de dinero gastados en ellos. 
+
 ```{r}
 
 # Filtrar las 10 localidades con mayor gasto
@@ -1231,6 +1238,12 @@ top_10_localidades <- df_tickets %>%
 # Identificar la localidad con mayor gasto
 mayor_localidad <- top_10_localidades %>%
   slice_max(total_gastado)
+
+```
+
+Para ver mejor la información obtenida, creamos un grafico de barras. 
+
+```{r}
 
 # Crear el gráfico
 ggplot(top_10_localidades, aes(x = reorder(localidad, total_gastado), y = total_gastado, fill = localidad)) +
@@ -1246,10 +1259,20 @@ ggplot(top_10_localidades, aes(x = reorder(localidad, total_gastado), y = total_
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
 ```
-Se obtiene que la localidad en la que mayor cantidad de dinero se ha gastado es Valencia con un total de 5253,03€.
+Obtenemos claramente en la gráfica que la localidad en la que mayor cantidad de 
+dinero se ha gastado en el Mercadona es Valencia con una cantidad total de 5253,03€, 
+superior al doble de la segunda localidad. 
 
+### Pregunta 6
 
-8. ¿Cuántos tickets se emiten entre las 9:00 y las 10:30 am comparado con el tramo de las 19:00-21:30?
+¿Cuántos tickets se emiten entre las 9:00 y las 10:30 am comparado con el tramo de 
+las 19:00-21:30?
+
+Queremos comparar cuanta gente realiza su compra justo cuando abre el supermercado contra
+cuanta gente lo hace justo antes del cierre de este. Para ello, filtramos y agrupamos 
+los tickets de las compras que se han realizado en estos periodos y hacemos un recuento 
+de ellos. 
+
 ```{r}
 
 # Extraer hora y minuto desde la columna tipo Period
@@ -1270,20 +1293,37 @@ tickets_por_tramo <- tibble(
 # Mostrar los resultados
 print(tickets_por_tramo)
 
+```
+
+Para ver mejor la información obtenida realizamos un grafico de barras.
+
+```{r}
+
 # Crear el gráfico comparativo
 ggplot(tickets_por_tramo, aes(x = tramo_horario, y = cantidad_tickets, fill = tramo_horario)) +
   geom_bar(stat = "identity") +
   labs(title = "Comparación de tickets emitidos en tramos horarios",
        x = "Tramo horario",
        y = "Cantidad de tickets") +
-  scale_fill_manual(values = c("skyblue", "salmon")) +
+  scale_fill_manual(values = c("skyblue", "salmon")) +  #
   theme_minimal()  
 
 
 ```
-Si comparamos los tickets que se emiten entre las 9:00-10:00 y entre las 19:00-21:30 podemos ver que se emiten muchos más tickets entre 19:00-21:30, emitiéndose un poco más de 10 veces lo que se emite por la mañana.
+Si comparamos los tickets que se emiten entre las 9:00-10:00 y entre las 19:00-21:30 
+podemos ver que se emiten muchos más tickets entre 19:00-21:30, emitiéndose un poco
+más de 10 veces lo que se emite por la mañana. Esto se puede deber a que la mayoria
+de personas que han subido sus tickets solo pueden hacer sus compras por la tarde ya que
+estudian o trabajan. 
 
-9. ¿Qué producto aparece más veces en tickets de más de 100 €?
+### Pregunta 7
+
+¿Qué producto aparece más veces en tickets de más de 100 €?
+
+Queremos observar cual es el producto que más se compra en las compras grandes 
+(superiores a 100 euros). Para ello, filtramos los tickets, agrupamos los productos 
+y hacemos un recuento. 
+
 ```{r}
 
 # Código corregido para obtener el top 5 de productos
@@ -1301,6 +1341,12 @@ top5_productos <- todos_los_tickets %>%
 # Mostrar el top 5
 print(top5_productos)
 
+```
+
+Para ver mejor la información obtenida creamos un gráfico de barras.
+
+```{r}
+
 # Crear el gráfico de barras para los 5 productos más comprados
 ggplot(top5_productos, aes(x = reorder(descripcion, total), y = total, fill = descripcion)) +
   geom_bar(stat = "identity") +
@@ -1311,7 +1357,8 @@ ggplot(top5_productos, aes(x = reorder(descripcion, total), y = total, fill = de
   scale_fill_brewer(palette = "Set3") 
 
 ```
-El producto que más aparece en las compras superiores a 100€ es el espárrago verde fino, con un total de 17 compras distintas con un importe superior a 100€.
+Vemos que el producto que más aparece en las compras superiores a 100€ es el espárrago 
+verde fino, con un total de 17 compras distintas con un importe superior a 100€.
 
 10. ¿Cuántas veces se ha comprado queso?
 
