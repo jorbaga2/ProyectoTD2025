@@ -706,8 +706,11 @@ frutas_verduras_mas_vendidas <- frutas_verduras %>%
     kilos_totales = sum(kilos_vendidos))  %>%
   arrange(desc(kilos_totales)) %>%
   head(5)
+<<<<<<< HEAD
   summarise(kilos_totales = sum(kilos_vendidos, na.rm = TRUE),
     veces_comprado = n()) 
+=======
+>>>>>>> d47bda05c5aeda6f3818c0935aa3b3fc17d01279
 
 ```
 
@@ -1020,7 +1023,11 @@ ya que es el dia que menos compras se registran.
 
 ## Preguntas planteadas por nosotros. 
 
+<<<<<<< HEAD
 Tras analizar los datos obtenidos y resolver las preguntas anteriores nos hemos planteado las siguientes: 
+=======
+Tras analizar los datos obtenidos y resolver las preguntas anteriores nos hemos planteado las siguientes preguntas: 
+>>>>>>> d47bda05c5aeda6f3818c0935aa3b3fc17d01279
 
 ### Pregunta 1 
 
@@ -1086,7 +1093,7 @@ valencia con 51 tickets.
 
 Queremos ver en que horario se hacen las compras más caras. Para ello, tenemos 
 que sumar el precio de todas las compras en cada horario y calcular su media y su 
-mediana. 
+mediana. Observamos los resultados obtenidos en una tabla.
 
 ```{r}
 
@@ -1106,28 +1113,6 @@ compras_por_periodo <- df_tickets %>% filter(!is.na(periodo_dia)) %>%
 
 #Mostramos el resultado en una tabla
 kable(compras_por_periodo, caption = "Importe medio por periodo del día")
-
-```
-
-Para ver mejor los resultados obtenidos, creamos una tabla con la media y la mediana 
-de las compras en cada franja horaria. 
-
-```{r}
-
-df_resumen <- df_tickets %>%
-  group_by(franja_horaria) %>%
-  summarise(media_importe = mean(importe))
-
-ggplot(df_resumen, aes(x = franja_horaria, y = media_importe, fill = franja_horaria)) +
-  geom_bar(stat = "identity", width = 0.6) +
-  labs(
-    title = "Importe medio de compra por franja horaria",
-    x = "Franja horaria",
-    y = "Importe medio (€)"
-  ) +
-  scale_fill_manual(values = c("mañana" = "skyblue", "tarde" = "orange")) +
-  theme_minimal()
-
 
 ```
 
@@ -1180,6 +1165,7 @@ cat("Porcentaje sobre el total:", compras_emergencia$porcentaje, "%", "\n")
 
 
 ```
+
 Vemos que tan solo 31 tickets son de emergencia y representan un 10,9% del total. 
 Por tanto, podemos decir que entre nuestros tickets no se encuentran demasiados
 de compras de emergencia. 
@@ -1225,6 +1211,7 @@ ggplot(top_10_localidades, aes(x = reorder(localidad, total_gastado), y = total_
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
 ```
+
 Obtenemos claramente en la gráfica que la localidad en la que mayor cantidad de 
 dinero se ha gastado en el Mercadona es Valencia con una cantidad total de 5253,03€, 
 superior al doble de la segunda localidad. 
@@ -1276,6 +1263,7 @@ ggplot(tickets_por_tramo, aes(x = tramo_horario, y = cantidad_tickets, fill = tr
 
 
 ```
+
 Si comparamos los tickets que se emiten entre las 9:00-10:00 y entre las 19:00-21:30 
 podemos ver que se emiten muchos más tickets entre 19:00-21:30, emitiéndose un poco
 más de 10 veces lo que se emite por la mañana. Esto se puede deber a que la mayoria
@@ -1323,6 +1311,7 @@ ggplot(top5_productos, aes(x = reorder(descripcion, total), y = total, fill = de
   scale_fill_brewer(palette = "Set3") 
 
 ```
+
 Vemos que el producto que más aparece en las compras superiores a 100€ es el espárrago 
 verde fino, con un total de 17 compras distintas con un importe superior a 100€.
 
@@ -1424,6 +1413,7 @@ ggplot(iva_por_localidad, aes(x = localidad, y = total_IVA, fill = localidad)) +
   scale_fill_viridis_d()  
 
 ```
+
 Vemos que el la ciudad de Valencia es donde más impuestos se ha pagado. Tiene sentido ya que es
 donde más compras se han realizado. 
  
@@ -1468,9 +1458,11 @@ ggplot(top_productos, aes(x = reorder(descripcion, importe), y = importe, fill =
   scale_fill_brewer(palette = "Set3")
 
 ```
+
 Vemos que el producto más caro es el ALISTADO MEDIANO.
 
 
+<<<<<<< HEAD
 
 ### Pregunta 11
 
@@ -1555,7 +1547,7 @@ ggplot(df_metodos, aes(x = Metodo_Pago, y = Frecuencia, fill = Metodo_Pago)) +
        x = "Método de Pago",
        y = "Frecuencia") +
   theme_minimal() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) 
 ```
 Al analizar los métodos de pago en los tickets procesados, observamos que todos los 
 tickets presentan "Tarjeta" como forma de pago. Esto sugiere que nuestro conjunto 
@@ -1569,4 +1561,6 @@ por el uso de tarjeta frente al efectivo.
 
 Tras la creación de la función, la lectura de los tickets de compra del Mercadona en formato PDF y el análisis de
 los datos obtenidos podemos decir que el día de la semana en que más se compra es el sábado y el que menos el jueves (contando que el domingo está cerrado), que el producto más comprado en unidades es el atun en lata y la fruta más comprada el plátano y que la localidad donde más se ha comprado es en Valencia.
+=======
+>>>>>>> d47bda05c5aeda6f3818c0935aa3b3fc17d01279
  
