@@ -5,14 +5,25 @@ author: Jorge Ballesteros García, Emma Almenar García, Miguel Angel Aloy Poved
 date: "2025-04-07"
 output:
   html_document:
-    echo: yes
-    number_sections: no
+    echo: true
+    number_sections: false
     theme: lumen
+<<<<<<< HEAD
     toc: yes
   pdf_document:
     toc: yes
     toc_depth: 3
     number_sections: no
+=======
+    toc: true
+  pdf_document:
+    toc: true
+    toc_depth: 3
+    number_sections: false
+  word_document:
+    toc: true
+    toc_depth: '3'
+>>>>>>> 33317d74bb75aadd2c2ad9dbef03030be3734c3c
 ---
 
 ```{r setup, include=FALSE}
@@ -690,13 +701,11 @@ frutas_verduras <- frutas_verduras %>%
 frutas_verduras_mas_vendidas <- frutas_verduras %>%
   mutate(producto = str_remove(str_extract(descripcion, "^[^\\(]+"), "^1 ")) %>%
   group_by(producto) %>%
-<<<<<<< HEAD
   summarise(
     veces_comprado = n(),                    
     kilos_totales = sum(kilos_vendidos))  %>%
   arrange(desc(kilos_totales)) %>%
   head(5)
-=======
   summarise(kilos_totales = sum(kilos_vendidos, na.rm = TRUE),
     veces_comprado = n()) 
 
@@ -713,7 +722,6 @@ los 5 productos de FRUTA Y VERDURA más vendidos.
 frutas_verduras_mas_vendidas <- frutas_verduras_mas_vendidas %>%
   arrange(desc(veces_comprado)) %>%  #Ordenamos de mayor a menor
   head(5) #Elegimos las dos primeras
->>>>>>> 77110e4a2734bc404a722533a277bb885b5c2950
 
 # Ver los resultados
 print(frutas_verduras_mas_vendidas)
@@ -1014,34 +1022,6 @@ ya que es el dia que menos compras se registran.
 
 Tras analizar los datos obtenidos y resolver las preguntas anteriores nos hemos planteado las siguientes: 
 
-1. ¿Cuáles son los 5 productos más comprados? ¿Y cuántas veces ha sido comprado el qué más?
-```{r}
-top10_productos <- todos_los_productos %>%
-  group_by(descripcion) %>%
-  summarise(total_comprado = sum(cantidad, na.rm = TRUE)) %>%
-  arrange(desc(total_comprado)) %>%
-  slice_head(n = 10)
-
-
-print(top10_productos)
-
-top5_productos <- todos_los_productos %>%
-  group_by(descripcion) %>%
-  summarise(total_comprado = sum(cantidad, na.rm = TRUE)) %>%
-  arrange(desc(total_comprado)) %>%
-  slice_head(n = 5)
-
-
-print(top5_productos)
-
-producto_mas_comprado <- top5_productos %>% slice(1)
-cat("El producto más comprado es:", producto_mas_comprado$descripcion, 
-    "con", producto_mas_comprado$total_comprado, "unidades compradas.\n")
-```
-Los 5 poductos mas vendidos son el Atun Claro Oliva, el Queso Lonchas Cabra, la BOLSA PLASTICO,	
-la LECHE DESNAT. CALCIO y el YOGUR COCO. El que mas, que es el ATUN CLARO OLIVA, se ha comprado 62 veces.
-
-
 ### Pregunta 1 
 
 ¿A qué tienda (calle ...) pertenecen la mayor parte de los tickets? 
@@ -1203,20 +1183,6 @@ cat("Porcentaje sobre el total:", compras_emergencia$porcentaje, "%", "\n")
 Vemos que tan solo 31 tickets son de emergencia y representan un 10,9% del total. 
 Por tanto, podemos decir que entre nuestros tickets no se encuentran demasiados
 de compras de emergencia. 
-
-6.  ¿Qué día de la semana es el que menos compras registra?
-
-```{r}
-df_tickets<- df_tickets %>% filter(!is.na(fecha)) %>% mutate(dia_semana = format(fecha, "%A"))
-
-compras_por_dia<-df_tickets %>% group_by(dia_semana) %>% summarise(n_compras = n()) %>% arrange(n_compras)
-
-kable(compras_por_dia, caption = "Compras por día de la semana")
-
-
-```
-
-Obtenemos que el día de la semana en el que menos se compra es el Domingo con solamente 2 compras.
 
 ### Pregunta 5
 
@@ -1407,7 +1373,7 @@ más comprado es el QUESO LOCHAS CABRA.
 
 ### Pregunta 9
 
-11. ¿Cuál es la mayor cantidad pagada de impuestos y en qué localización se ha producido?
+¿Cuál es la mayor cantidad pagada de impuestos y en qué localización se ha producido?
 
 Queremos ver cual es la mayor canitdad de impuestos pagada. Realmente, sabemos que este
 dato se encontrará entre las compras grandes pero no tiene porque ser la mayor, ya que 
@@ -1436,6 +1402,7 @@ if (!is.na(indice_max_iva) && indice_max_iva > 0) {
 }
 
 ```
+
 Vemos la cantidad de impuestos pagada en cada una de las localidades en una gráfica.
 
 ```{r}
@@ -1504,30 +1471,102 @@ ggplot(top_productos, aes(x = reorder(descripcion, importe), y = importe, fill =
 Vemos que el producto más caro es el ALISTADO MEDIANO.
 
 
- 
-13. ¿Qué días presentan mayor volumen de ventas? ¿Se observan picos específicos durante la semana?
+
+### Pregunta 11
+
+¿Cómo ha evolucionado el gasto a lo largo del tiempo?
+
 ```{r}
 
-# Comprobamos que la columna fecha está en formato de fecha
-df_tickets <- df_tickets %>%
-  filter(!is.na(fecha)) %>%
-  mutate(dia_semana = weekdays(fecha, abbreviate = FALSE)) 
+# Creamos un data.frame con la fecha y el total gastado en cada ticket
+evolucion_gasto <- data.frame(
+  fecha = as.Date(character()),
+  total = numeric(),
+  stringsAsFactors = FALSE
+)
 
-# Contamos las compras por día 
-ventas_por_dia <- df_tickets %>%
-  group_by(dia_semana) %>%
-  summarise(n_compras = n()) %>%
-  arrange(desc(n_compras)) # Ordenamos de mayor a menor volumen de ventas
+for (ticket in todos_los_tickets) {
+  if (!is.null(ticket$productos) && !is.null(ticket$fecha)) {
+    
+    # Adaptamos el formato según el tipo de fecha
+    fecha_ticket <- as.Date(ticket$fecha, format = "%d/%m/%Y")
+    
+    total_ticket <- sum(ticket$productos$importe, na.rm = TRUE)
+    
+    evolucion_gasto <- rbind(
+      evolucion_gasto,
+      data.frame(fecha = fecha_ticket, total = total_ticket, stringsAsFactors = FALSE)
+    )
+  }
+}
+```
 
-# Resultados
-kable(ventas_por_dia, caption = "Número de compras por día de la semana")
 
+Mostramos en un gráfico la evolución del gasto.
+```{r}
 
-# Creamos un gráfico de barras por número de compras
-ggplot(ventas_por_dia, aes(x = factor(dia_semana, levels = c("lunes", "martes", "miércoles", "jueves", "viernes", "sábado", "domingo")), y = n_compras, fill = dia_semana)) +
-  geom_bar(stat = "identity") +
-  labs(title = "Número de compras por día de la semana", x = "Día de la semana", y = "Número de compras") 
+# Ordenamos por fecha
+evolucion_gasto <- evolucion_gasto[order(evolucion_gasto$fecha), ]
+
+# Dibujamos la evolución del gasto
+ggplot(evolucion_gasto, aes(x = fecha, y = total)) +
+  geom_line(color = "steelblue", size = 1) +
+  geom_point(color = "darkblue") +
+  labs(title = "Evolución del gasto a lo largo del tiempo",
+       x = "Fecha del ticket",
+       y = "Total gastado (€)") +
+  theme_minimal()
 
 ```
-Sí que se observan picos durante la semana. En el gráfico podemos ver cómo el sábado es el día con mayor número de compras, esto sugiere que las pernonas pueden tender más a realizar compras los sábados para abastecerse para la semana siguiente, a esto lo sigue el lunes. En cambio, el día con menor número de compras, a excepción del domingo que suelen estar cerrados los supermecados, es el jueves.
+
+Este análisis nos permitiría identificar patrones en el consumo y detectar posibles fechas 
+clave en las que el gasto aumenta. Pero, dado que el gráfico que obtenemos no sigue una 
+tendencia definida, sino que muestra altibajos frecuentes podemos asumir que esto puede 
+estar relacionado con compras puntuales de productos caros o con una planificación 
+irregular de las compras.
+
+
+
+### Pregunta 12
+
+¿Cuál es el método de pago más frecuente en los tickets?
+```{r}
+
+# Extraemos todos los métodos de pago de los tickets
+metodos_pago <- sapply(todos_los_tickets, function(ticket) ticket$metodo_pago)
+
+# Creamos la tabla de frecuencia de métodos de pago
+tabla_metodos <- table(metodos_pago)
+```
+
+Mostramos en un gráfico el método de pago más frecuente.
+```{r}
+
+# Convertimos la tabla a un data.frame 
+df_metodos <- as.data.frame(tabla_metodos)
+
+# Renombramos columnas para mayor claridad
+colnames(df_metodos) <- c("Metodo_Pago", "Frecuencia")
+
+# Creamos el gráfico
+ggplot(df_metodos, aes(x = Metodo_Pago, y = Frecuencia, fill = Metodo_Pago)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Método de Pago Más Utilizado en Tickets",
+       x = "Método de Pago",
+       y = "Frecuencia") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+Al analizar los métodos de pago en los tickets procesados, observamos que todos los 
+tickets presentan "Tarjeta" como forma de pago. Esto sugiere que nuestro conjunto 
+de tickets proviene de compras exclusivamente con tarjeta. Este resultado puede 
+indicar un patrón de comportamiento del consumidor que muestra una preferencia clara 
+por el uso de tarjeta frente al efectivo.
+
+
+ 
+#Resumen
+
+Tras la creación de la función, la lectura de los tickets de compra del Mercadona en formato PDF y el análisis de
+los datos obtenidos podemos decir que el día de la semana en que más se compra es el sábado y el que menos el jueves (contando que el domingo está cerrado), que el producto más comprado en unidades es el atun en lata y la fruta más comprada el plátano y que la localidad donde más se ha comprado es en Valencia.
  
