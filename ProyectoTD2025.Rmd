@@ -1153,26 +1153,41 @@ ggplot(df_resumen, aes(x = franja_horaria, y = media_importe, fill = franja_hora
 
 El resultado muestra que, en promedio, las compras realizadas por la mañana son más caras (51.69€) que las realizadas por la tarde (45.64 €). La mediana también es ligeramente más alta por la mañana (36.69 € vs. 37.38 € por la tarde), aunque la diferencia en medianas es mínima.
 
-4.  ¿Cuál ha sido el ticket más caro registrado? ¿Y el más barato?
+### Pregunta 3 
+
+¿Cuál ha sido el ticket más caro registrado? ¿Y el más barato?
+
+Queremos ver cual ha sido el ticket más caro y cual el más barato, para ello, tan solo 
+tenemos que ordenar el dataframe, primero de mayor a menor y depués de menor a mayor, 
+y quedaros con la primera fila 
 
 ```{r}
+
+#Ordenamos de mayor a menor
 ticket_mas_caro<- df_tickets %>% arrange(desc(importe_total)) %>% head(1)
 
+#Ordenamos de menor a mayor 
 ticket_mas_barato<- df_tickets %>% arrange(importe_total) %>% head(1)
 
 cat("El ticket más caro es", ticket_mas_caro$archivo, "con un importe de: ", ticket_mas_caro$importe_total, "€", "\n")
 
 cat("El ticket más barato es", ticket_mas_barato$archivo, "con un importe de: ", ticket_mas_barato$importe_total, "€")
 
-
-
-
-
 ```
+Vemos que el ticket más caro regitrado tiene un precio de 234.2€ y el más barato 
+tiene un precio de 0.43€
 
-Ya hemos obtenido el ticket más caro registrado con más de 200€ de diferencia con respecto al más barato.
+### Pregunta 4
 
-5.¿Cómo de frecuentes son las compras de emergencia (tickets de menos de 10€)?
+¿Cómo de frecuentes son las compras de emergencia (tickets de menos de 10€)?
+
+Algo muy común son las compras de emergencia, aquellas veces donde te falta algo indispensable 
+y solo vas a comprar eso, y, por tanto, no gastas demasiado dinero en esta compra. Nos hemos 
+interesado por ver la cantidad de ocasiones en que esto sucede en los tickets recogidos. 
+
+Para ver esta información, filtramos del dataframe aquellos tickets donde las compras
+son inferiores a 10 euros. También miramos que porcentaje de tikets tienen esta cualidad
+sobre la canitdad de tickets total.
 
 ```{r}
 compras_emergencia<- df_tickets %>% summarise(n_emergencia = sum(importe_total < 10, na.rm = TRUE),
@@ -1185,6 +1200,9 @@ cat("Porcentaje sobre el total:", compras_emergencia$porcentaje, "%", "\n")
 
 
 ```
+Vemos que tan solo 31 tickets son de emergencia y representan un 10,9% del total. 
+Por tanto, podemos decir que entre nuestros tickets no se encuentran demasiados
+de compras de emergencia. 
 
 6.  ¿Qué día de la semana es el que menos compras registra?
 
