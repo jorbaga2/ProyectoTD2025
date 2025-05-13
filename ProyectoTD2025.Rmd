@@ -4,15 +4,18 @@ author: Jorge Ballesteros García, Emma Almenar García, Miguel Angel Aloy Poved
   Larios Bea, Samuel Lozada Borrás, Iker Martínez Bravo
 date: "2025-04-07"
 output:
-  pdf_document:
-    toc: yes
-    toc_depth: 3
-    number_sections: no
   html_document:
-    echo: yes
-    number_sections: no
+    echo: true
+    number_sections: false
     theme: lumen
-    toc: yes
+    toc: true
+  pdf_document:
+    toc: true
+    toc_depth: 3
+    number_sections: false
+  word_document:
+    toc: true
+    toc_depth: '3'
 ---
 
 ```{r setup, include=FALSE}
@@ -690,13 +693,11 @@ frutas_verduras <- frutas_verduras %>%
 frutas_verduras_mas_vendidas <- frutas_verduras %>%
   mutate(producto = str_remove(str_extract(descripcion, "^[^\\(]+"), "^1 ")) %>%
   group_by(producto) %>%
-<<<<<<< HEAD
   summarise(
     veces_comprado = n(),                    
     kilos_totales = sum(kilos_vendidos))  %>%
   arrange(desc(kilos_totales)) %>%
   head(5)
-=======
   summarise(kilos_totales = sum(kilos_vendidos, na.rm = TRUE),
     veces_comprado = n()) 
 
