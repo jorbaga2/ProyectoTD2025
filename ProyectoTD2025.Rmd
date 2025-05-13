@@ -130,7 +130,7 @@ es_mercadona <- function(lineas) {
 El siguiente paso es crear otra subfunción para procesar las líneas y extaer la 
 información de los tickets, necesaria para analizar y posteriormente contestar a 
 las cuestiones planteadas. En esta subfunción indicaremos si el ticket es o no del 
-Mercadona, en el caso del ser del Mercadona incializaremos uns lsita para almacenar 
+Mercadona, en el caso del ser del Mercadona incializaremos uns lista para almacenar 
 los datos de los tickets (como supermercado, direccion, cp, localidad,...)
 
 ```{r}
@@ -413,7 +413,13 @@ if (length(linea_parking) > 0) {
 ```
 
 
-A continuación, se define la función procesar_tickets() para automatizar la lectura y extracción de datos de múltiples tickets PDF ubicados en la carpeta data. Para cada archivo, se leen sus líneas de texto y se verifica si pertenece a Mercadona con es_mercadona(). Si es válido, se procesan sus datos con procesar_lineas() y se almacenan en una lista junto con el nombre del archivo. La función maneja errores durante la lectura y filtra tickets no válidos, devolviendo solo los correctamente procesados.
+A continuación, se define la función procesar_tickets() para automatizar la lectura 
+y extracción de datos de múltiples tickets PDF ubicados en la carpeta data. 
+Para cada archivo, se leen sus líneas de texto y se verifica si pertenece a 
+Mercadona con es_mercadona(). Si es válido, se procesan sus datos con 
+procesar_lineas() y se almacenan en una lista junto con el nombre del archivo. 
+La función maneja errores durante la lectura y filtra tickets no válidos, 
+devolviendo solo los correctamente procesados.
 
 ```{r}
 #Función para procesar múltiples tickets PDF.
