@@ -4,15 +4,15 @@ author: Jorge Ballesteros García, Emma Almenar García, Miguel Angel Aloy Poved
   Larios Bea, Samuel Lozada Borrás, Iker Martínez Bravo
 date: "2025-04-07"
 output:
-  pdf_document:
-    toc: yes
-    toc_depth: 3
-    number_sections: no
   html_document:
     echo: yes
     number_sections: no
     theme: lumen
     toc: yes
+  pdf_document:
+    toc: yes
+    toc_depth: 3
+    number_sections: no
 ---
 
 ```{r setup, include=FALSE}
@@ -1462,7 +1462,7 @@ donde más compras se han realizado.
  
 ### Pregunta 10
 
-¿Cuál es el producto más caro?
+¿Cuál es el producto más caro comprado?
 
 Queremos ver cual es el producto más caro comprado registrado en nuestros tickets. 
 Para ello, agrupamos los productos iguales y después comparamos sus precios.
@@ -1483,7 +1483,7 @@ cat("El producto más caro es:", producto_mas_caro$descripcion,
 
 ```
 
-Mostramos en una tabla los productos más caros. 
+Mostramos en un gráfico los productos más caros. 
 
 ```{r}
 
@@ -1501,7 +1501,9 @@ ggplot(top_productos, aes(x = reorder(descripcion, importe), y = importe, fill =
   scale_fill_brewer(palette = "Set3")
 
 ```
-Vemos que el producto más caro es el MEDIANO.
+Vemos que el producto más caro es el ALISTADO MEDIANO.
+
+
  
 13. ¿Qué días presentan mayor volumen de ventas? ¿Se observan picos específicos durante la semana?
 ```{r}
