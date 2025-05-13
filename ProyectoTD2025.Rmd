@@ -1100,6 +1100,59 @@ ggplot(tickets_por_direccion, aes(x = reorder(etiqueta, -num_tickets), y = num_t
 Observamos que la tienda (calle) con mayor número de tickets es C/ QUART 120 de 
 valencia con 51 tickets.
 
+### Pregunta 2
+
+¿En qué horario (mañana o tarde) se hacen las compras más caras?
+
+Queremos ver en que horario se hacen las compras más caras. Para ello, tenemos 
+que sumar el precio de todas las compras en cada horario y calcular su media y su 
+mediana. 
+
+```{r}
+
+#Agrupamos los tickets en mañana y tarde
+df_tickets <- df_tickets %>%
+  mutate(
+    periodo_dia = ifelse(hour(hora) < 12, "Mañana", "Tarde")
+  )
+
+# Calculamos la media y la mediana de cada periodo.
+compras_por_periodo <- df_tickets %>% filter(!is.na(periodo_dia)) %>%
+  group_by(periodo_dia) %>%
+  summarise(
+    media_importe = mean(importe_total, na.rm = TRUE),
+    mediana_importe = median(importe_total, na.rm = TRUE)
+  )
+
+#Mostramos el resultado en una tabla
+kable(compras_por_periodo, caption = "Importe medio por periodo del día")
+
+```
+
+Para ver mejor los resultados obtenidos, creamos una tabla con la media y la mediana 
+de las compras en cada franja horaria. 
+
+```{r}
+
+df_resumen <- df_tickets %>%
+  group_by(franja_horaria) %>%
+  summarise(media_importe = mean(importe))
+
+ggplot(df_resumen, aes(x = franja_horaria, y = media_importe, fill = franja_horaria)) +
+  geom_bar(stat = "identity", width = 0.6) +
+  labs(
+    title = "Importe medio de compra por franja horaria",
+    x = "Franja horaria",
+    y = "Importe medio (€)"
+  ) +
+  scale_fill_manual(values = c("mañana" = "skyblue", "tarde" = "orange")) +
+  theme_minimal()
+
+
+```
+
+El resultado muestra que, en promedio, las compras realizadas por la mañana son más caras (51.69€) que las realizadas por la tarde (45.64 €). La mediana también es ligeramente más alta por la mañana (36.69 € vs. 37.38 € por la tarde), aunque la diferencia en medianas es mínima.
+
 4.  ¿Cuál ha sido el ticket más caro registrado? ¿Y el más barato?
 
 ```{r}
