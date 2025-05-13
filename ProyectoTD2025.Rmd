@@ -477,7 +477,7 @@ length(todos_los_tickets) #Se procesan correctamente 306
 
 ```
 
-Creamos un dataframe a parir de la lista de tickets
+Creamos un dataframe a partir de la lista de ticket. Para ello, se define la función tickets_a_dataframe() para transformar la lista de tickets procesados en un dataframe, donde cada fila representa un ticket y cada columna una variable relevante (como fecha, importe total, dirección, método de pago, etc.). Una vez creado el dataframe df_tickets, se visualiza su contenido y se inspeccionan los tipos de datos. Para facilitar su análisis, se ajustan los formatos de fecha y hora utilizando funciones del paquete lubridate. Esto permite trabajar correctamente con valores temporales como la hora de compra o el tiempo de aparcamiento.
 
 ```{r}
 # Vamos a convertir la lista de tickets en un dataframe (cada fila es un ticket y cada columna una variable).
