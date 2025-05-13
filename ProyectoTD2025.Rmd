@@ -1360,7 +1360,12 @@ ggplot(top5_productos, aes(x = reorder(descripcion, total), y = total, fill = de
 Vemos que el producto que más aparece en las compras superiores a 100€ es el espárrago 
 verde fino, con un total de 17 compras distintas con un importe superior a 100€.
 
-10. ¿Cuántas veces se ha comprado queso?
+### Pregunta 8
+
+¿Cuántas veces se ha comprado queso?
+
+Queremos saber cual es la compra de queso entre los tickets recogidos. Para ello, buscamos
+entre todos los productos todos los quesos y hacemos un recuento. 
 
 ```{r}
 
@@ -1382,6 +1387,11 @@ total_quesos <- sum(productos_queso_agrupado$cantidad_total)
 # Mostrar el total de quesos
 print(paste("Total de quesos: ", total_quesos))
 
+```
+Vemos en una tabla la distribución de la cantidad de los diferentes quesos comprados.
+
+```{r}
+
 # Crear el gráfico
 ggplot(productos_queso_agrupado, aes(x = reorder(descripcion, cantidad_total), y = cantidad_total)) +
   geom_bar(stat = "identity", fill = "skyblue") +
@@ -1392,10 +1402,19 @@ ggplot(productos_queso_agrupado, aes(x = reorder(descripcion, cantidad_total), y
 
 
 ```
-Podemos ver que el total de quesos comprados en estos ticket es de 227.
+Podemos ver que el total de quesos comprados en estos ticket es de 227. Y que el queso 
+más comprado es el QUESO LOCHAS CABRA.
 
+### Pregunta 9
 
 11. ¿Cuál es la mayor cantidad pagada de impuestos y en qué localización se ha producido?
+
+Queremos ver cual es la mayor canitdad de impuestos pagada. Realmente, sabemos que este
+dato se encontrará entre las compras grandes pero no tiene porque ser la mayor, ya que 
+los porductos tienen impuestos diferentes. 
+
+Para calcular este dato, vamos comprando todos los impuestos pagados de todos los tickets. 
+
 ```{r}
 
 # Obtenemos el índice de la fila con mayor IVA
@@ -1416,6 +1435,11 @@ if (!is.na(indice_max_iva) && indice_max_iva > 0) {
   cat("No se pudo determinar la mayor cantidad pagada de impuestos.\n")
 }
 
+```
+Vemos la cantidad de impuestos pagada en cada una de las localidades en una gráfica.
+
+```{r}
+
 # Vamos a representarlo en un gráfico
 # Agrupamos por localidad y sumamos el IVA total pagado
 iva_por_localidad <- df_tickets %>%
@@ -1433,7 +1457,8 @@ ggplot(iva_por_localidad, aes(x = localidad, y = total_IVA, fill = localidad)) +
   scale_fill_viridis_d()  
 
 ```
-
+Vemos que el la ciudad de Valencia es donde más impuestos se ha pagado. Tiene sentido ya que es
+donde más compras se han realizado. 
  
 12. ¿Cuál es el producto más caro?
 ```{r}
