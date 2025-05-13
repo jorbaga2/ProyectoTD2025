@@ -4,108 +4,144 @@ author: Jorge Ballesteros García, Emma Almenar García, Miguel Angel Aloy Poved
   Larios Bea, Samuel Lozada Borrás, Iker Martínez Bravo
 date: "2025-04-07"
 output:
-  html_document: default
-  pdf_document: default
+  pdf_document:
+    toc: yes
+    toc_depth: 3
+    number_sections: no
+  html_document:
+    echo: yes
+    number_sections: no
+    theme: lumen
+    toc: yes
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-Mini Proyecto de Análisis Exploratorio de Datos
-Emma Almenar García, Jorge Ballesteros García, Miguel Ángel Aloy Poveda, Ainhoa Larios Bea, 
-Samuel Lozada Borrás, Iker Martínez Bravo
 
 
-Índice:
-1.- Introducción
-2.- Material y métodos 
-3.- Resultados
-4.- Conclusiones
+# Introducción.
 
+En este proyecto se realiza un análisis exploratorio de datos basado en tickets 
+de compra del supermercado Mercadona, con el objetivo de identificar patrones de 
+consumo, tendencias en los productos adquiridos y comportamientos de los clientes. 
+Este trabajo se estructura en varias etapas que incluyen la carga y limpieza de 
+datos, análisis descriptivo, visualización de resultados y respuesta a preguntas 
+clave planteadas durante el desarrollo del proyecto.
 
-1.- Introducción.
-En este proyecto se realiza un análisis exploratorio de datos basado en tickets de compra del supermercado Mercadona, con el objetivo de identificar patrones de consumo, tendencias en los productos adquiridos y comportamientos de los clientes. Este trabajo se estructura en varias etapas que incluyen la carga y limpieza de datos, análisis descriptivo, visualización de resultados y respuesta a preguntas clave planteadas durante el desarrollo del proyecto.
+Los tickets de compra del supermercado Mercadona han sido recogidos por los 
+diferentes estudiantes de la asignatura de Tratamiento de los Datos de la carrera
+Ciencia de Datos en la Universidad de Valencia.
 
-1.1.- Carga de librerías y procesamiento inicial
-Para llevar a cabo el análisis, se utilizaron diversas librerías de R como pdftools, dplyr y stringr. Estas herramientas facilitan la lectura y conversión de los tickets desde formato PDF a texto procesable. El programa desarrollado incluye funciones específicas para:
-Identificar si los documentos corresponden a tickets del supermercado Mercadona.
-Extraer información clave del encabezado (nombre del supermercado, dirección, fecha, hora, etc.).
-Procesar productos listados en los tickets, incluyendo aquellos vendidos a peso.
-Capturar detalles adicionales como descuentos, IVA, método de pago o uso del parking.
-Es necesario hacer esta carga antes de empezar con el programa:
+## Carga de librerías y procesamiento inicial
 
-Carga de librerías
+Para llevar a cabo el análisis, se utilizaron principalemente las librerías de R 
+pdftools, dplyr y stringr. Estas herramientas facilitan la lectura y conversión 
+de los tickets desde formato PDF a texto procesable. El programa desarrollado 
+incluye funciones específicas para:
+
+- Identificar si los documentos corresponden a tickets del supermercado Mercadona.
+- Extraer información clave del encabezado (nombre del supermercado, dirección, fecha, hora, etc.).
+- Procesar productos listados en los tickets, incluyendo aquellos vendidos a peso.
+- Capturar detalles adicionales como descuentos, IVA, método de pago o uso del parking.
+
+Es necesario hacer esta carga antes de empezar con el programa, por tanto, 
+cargamos las diferentes librerías.
 
 ```{r}
-# Asegurarse de que el paquete "pacman" está instalado
+# Nos aseguramos de que el paquete "pacman" está instalado
 if (!require('pacman')) install.packages('pacman')
 
-# Librerias a cargar
+# Cargamos las librerias
 pacman::p_load(pdftools, tidyverse, readxl, lubridate, visdat, knitr, rticles, tinytex, kableExtra, patchwork, cowplot, wordcloud)
-
 
 ```
 
-1.2.- Características generales del conjunto de los datos.
+## Características generales del conjunto de los datos.
 
-Los datos procesados corresponden a 355 tickets (no todos ellos válidos) obtenidos a partir de archivos PDF. Cada ticket contiene información organizada en las siguientes variables principales:
+Los datos procesados corresponden a 355 tickets (no todos ellos válidos) obtenidos 
+a partir de archivos PDF. Cada ticket contiene información organizada en las 
+siguientes variables principales:
 
-Encabezado: Información del supermercado (nombre, dirección, localidad), fecha y hora de la compra.
-Productos: Detalles sobre cada producto adquirido (cantidad, descripción, precio unitario e importe total).
-Totales: Subtotal, IVA, descuentos aplicados e importe total del ticket.
-Extras: Datos sobre donaciones realizadas, uso del parking (hora de entrada y salida) y método de pago.
+- Encabezado: Información del supermercado (nombre, dirección, localidad), fecha y hora de la compra.
+- Productos: Detalles sobre cada producto adquirido (cantidad, descripción, precio unitario e importe total).
+- Totales: Subtotal, IVA, descuentos aplicados e importe total del ticket.
+- Extras: Datos sobre donaciones realizadas, uso del parking (hora de entrada y salida) y método de pago.
 
-1.3.- Análisis de valores faltantes.
+## Análisis de valores faltantes.
 
-Se utilizó la librería VIM para analizar los valores faltantes (NA) en el dataset. Los principales hallazgos incluyen:
-Algunos tickets no contenían información completa sobre las categorías de productos.
-En ciertos casos, el precio unitario o la cantidad estaban ausentes debido a errores en el registro.
+Se utilizó la librería VIM para analizar los valores faltantes (NA) en el dataset. 
+Los principales hallazgos incluyen:
+
+- Algunos tickets no contenían información completa sobre las categorías de productos.
+- En ciertos casos, el precio unitario o la cantidad estaban ausentes debido a errores en el registro.
+
 Para abordar estos problemas, se aplicaron reglas específicas:
-Los registros con precios unitarios faltantes fueron eliminados si no era posible imputar un valor razonable.
-Los valores NA en las categorías fueron imputados utilizando patrones observados en otros registros similares.
 
-1.4.- Preguntas planteadas.
+- Los registros con precios unitarios faltantes fueron eliminados si no era posible imputar un valor razonable.
+- Los valores NA en las categorías fueron imputados utilizando patrones observados en otros registros similares.
+
+## Preguntas planteadas.
 
 El análisis busca responder a preguntas clave relacionadas con los patrones de compra como las siguientes:
-¿Cuáles son los 5 productos más comprados? ¿Y cuántas veces ha sido comprado el qué más?
-¿Qué días presentan mayor volumen de ventas? ¿Se observan picos específicos durante la semana?
- ¿Qué producto aparece más veces en tickets de más de 100 €?
-¿Cuál es la mayor cantidad pagada de impuestos y en qué localización se ha producido?
-¿Qué día de la semana es el que menos compras registra?
+- ¿Cuáles son los 5 productos más comprados? ¿Y cuántas veces ha sido comprado el qué más?
+- ¿Qué días presentan mayor volumen de ventas? ¿Se observan picos específicos durante la semana?
+- ¿Qué producto aparece más veces en tickets de más de 100 €?
+- ¿Cuál es la mayor cantidad pagada de impuestos y en qué localización se ha producido?
+- ¿Qué día de la semana es el que menos compras registra?
 
-2.- Métodos y materiales.
-
-
+# Métodos y materiales.
 
 
-Vamos a crear una función que procese un ticket individual
+# Creación de la función para la lectura de tickets.
+
+El primer paso del proyecto consiste en la automatización de un código para la 
+lectura de los diferentes tickets de compra del Mercadona. Para ello creamos una 
+función que procese un ticket individual, y como todos los tickets comparten el
+mismo formato, podremos utilizarla para la lectura de todos. 
+
+Lo primero que hacemos en la función para la lectura de los tickets es una subfunción 
+para la leer los archivos PDF y convertir la información obtenida en líneas de
+texto procesadas.
 
 ```{r}
 
-# Función para leer PDF y convertir en líneas de texto procesadas
 leer_pdf <- function(archivo) {
-  texto <- pdf_text(archivo)
-  lineas <- unlist(strsplit(paste(texto, collapse = "\n"), "\n"))
+  texto <- pdf_text(archivo) #Lee la información del PDF
+  lineas <- unlist(strsplit(paste(texto, collapse = "\n"), "\n")) #Transforma la información en líneas de texto procesadas
   trimws(lineas)
 }
+```
 
+Después creamos otra subfunción que busca la palabra "MERCADONA" en mayúsculas de las 
+líneas de texto procesadas para seleccionar solo los tickets pertenecientes a este 
+supermecado.
 
-#Función que busca "MERCADONA" en mayúsculas.
+```{r}
+
 es_mercadona <- function(lineas) {
-  if(length(lineas) == 0) return(FALSE)
+  if(length(lineas) == 0) return(FALSE) #Si no lee información del ticket
   any(grepl("^MERCADONA\\b", lineas))  # ^ indica inicio de línea, \b para palabra completa
 }
 
-# Función para procesar las líneas y extraer información
+```
+
+El siguiente paso es crear otra subfunción para procesar las líneas y extaer la 
+información de los tickets, necesaria para analizar y posteriormente contestar a 
+las cuestiones planteadas. En esta subfunción indicaremos si el ticket es o no del 
+Mercadona, en el caso del ser del Mercadona incializaremos uns lista para almacenar 
+los datos de los tickets (como supermercado, direccion, cp, localidad,...)
+
+```{r}
+
 procesar_lineas <- function(lineas) {
   if(!es_mercadona(lineas)) {
     message("El texto no corresponde a un ticket de Mercadona")
-    return(NULL)
+    return(NULL) #Si el ticket no es de Mercadona
   }
   
 #Inicializamos una lista para almacenar datos. Esta lista incluye los datos de tanto el encabezado, como los productos
-  
   datos<-list(
     supermercado = NA,
     direccion = NA,
@@ -376,7 +412,14 @@ if (length(linea_parking) > 0) {
 
 ```
 
-Creamos una función para procesar todos los tickets.
+
+A continuación, definimos la función procesar_tickets() para automatizar la lectura 
+y extracción de datos de múltiples tickets PDF ubicados en la carpeta data. 
+Para cada archivo, se leen sus líneas de texto y se verifica si pertenece a 
+Mercadona con es_mercadona(). Si es válido, se procesan sus datos con 
+procesar_lineas() y se almacenan en una lista junto con el nombre del archivo. 
+La función maneja errores durante la lectura y filtra tickets no válidos, 
+devolviéndonos solo los correctamente procesados.
 
 ```{r}
 #Función para procesar múltiples tickets PDF.
@@ -440,7 +483,8 @@ length(todos_los_tickets) #Se procesan correctamente 306
 
 ```
 
-Creamos un dataframe a parir de la lista de tickets
+Creamos un dataframe a partir de la lista de ticket. Para ello, definimos la función tickets_a_dataframe() para transformar la lista de tickets procesados en un dataframe, donde cada fila representa un ticket y cada columna una variable relevante (como fecha, importe total, dirección, método de pago, etc.). Una vez creado el dataframe df_tickets, visualizamos su contenido y inspeccionamos los tipos de datos. 
+Para facilitar su análisis, en el segundo cuadro ajustamos los formatos de fecha y hora utilizando funciones del paquete lubridate. Esto nos permite trabajar correctamente con valores temporales como la hora de compra o el tiempo de aparcamiento.
 
 ```{r}
 # Vamos a convertir la lista de tickets en un dataframe (cada fila es un ticket y cada columna una variable).
@@ -518,22 +562,40 @@ str(df_tickets)
 
 ```
 
-3.- Resultados
+# Resolución de las cuestiones planteadas
 
-Una vez que los datos de los tickets han sido correctamente almacenados y etiquetados en nuestro data frame, iniciamos el proceso de análisis para extraer información significativa. Este análisis nos permite identificar tendencias de compra, patrones de consumo, comportamientos recurrentes de los clientes y otras curiosidades que, a simple vista, podrían pasar desapercibidas.
+Una vez que los datos de los tickets han sido correctamente almacenados y etiquetados 
+en nuestro data frame, iniciamos el proceso de análisis para extraer información 
+significativa. Este análisis nos permite identificar tendencias de compra, patrones 
+de consumo, comportamientos recurrentes de los clientes y otras curiosidades que, 
+a simple vista, podrían pasar desapercibidas.
 
-Estas preguntas no solo nos permiten interpretar el presente, sino por ejemplo también permiten a las empresas como Mercadona anticipar tendencias futuras, mejorar la experiencia del cliente, ajustar estrategias de precios y promociones, y, en última instancia, aumentar la eficiencia operativa y la rentabilidad del negocio.
+Estas preguntas no solo nos permiten interpretar el presente, sino por ejemplo 
+también permiten a las empresas como Mercadona anticipar tendencias futuras, 
+mejorar la experiencia del cliente, ajustar estrategias de precios y promociones, 
+y, en última instancia, aumentar la eficiencia operativa y la rentabilidad del 
+negocio.
 
-Por ello, nos hemos planteado ciertas preguntas que contestaremos con la informacion de los tickets recopilados.
+Por ello, nos hemos planteado ciertas preguntas que contestaremos con la informacion 
+de los tickets recopilados.
 
-Respondemos a las preguntas planteadas en el enunciado del proyecto:
+Primero resolvemos las preguntas que se plantean en el enunciado del proyecto:
 
-1. ¿Cuáles son los 5 productos, de los vendidos por unidades, con más ventas ? 
+## Preguntas planteadas en el enunciado 
+
+### Pregunta 1 
+
+¿Cuáles son los 5 productos, de los vendidos por unidades, con más ventas ? 
 ¿Cuántas unidades de cada uno se han vendido ?
+
+Para la resolución de esta cuestión primero creamos una lista con todos los 
+productos de los tickets del dataframe para poder trabajar sobre ella. Después 
+filtraremos la lista por aquellos productos que se venden por unidades y los agruparemos 
+por nombre para luego hacer un recuento de cuantas veces se ha comprado ese producto.
 
 ```{r}
 
-#Creamos una lista con todos los productos de los tickets del dataframe
+#Creamos la lista con todos los productos del dataframe
 todos_los_productos <- bind_rows(lapply(todos_los_tickets, function(ticket) ticket$productos))
 
 #Filtramos los productos a aquellos que se venden por unidades
@@ -545,22 +607,74 @@ todos_productos_unidades <- todos_los_productos %>% filter(
 #Agrupamos los productos por nombre
 todos_productos_unidades <- todos_productos_unidades %>% group_by(descripcion)
 
-#Sumamos las cantidades de todos los productos que tienen el mismo nombre
+#Contamos la cantidad de veces que se compran todos los productos que tienen el mismo nombre
 todos_productos_unidades <- todos_productos_unidades %>% summarise(unidades_vendidas = sum(cantidad, na.rm = TRUE)) 
 
+```
+
+Ahora para visualizamos en forma de tabla los cinco productos que se venden por unidades 
+más vendidos. Para ello, ordenamos los productos en orden descendente por la cantidad 
+de veces que se ha vendido, es decir, ordenamos los productos del más vendido al 
+menos vendido; y, por último, mostramos las primeras cinco filas de la tabla para 
+mostrar los cinco porductos más vendidos.
+
+```{r}
 #Ordenamos los productos de manera descendente
 todos_productos_unidades <- todos_productos_unidades %>% arrange(desc(unidades_vendidas)) 
 
 #Cogemos los cinco primeros productos de la tabla
 todos_productos_unidades <- todos_productos_unidades %>% slice_head(n = 5)
 
-#Mostramos los cinco productos comprados por unidades más vendidos.
+#Mostramos la tabla
 print(todos_productos_unidades)
 
 ```
+En la tabla podemos observar que el producto más vendido en los tickets analizados 
+es el atun claro de oliva con 62 unidades vendidas. También podemos observar que 
+mucha gente no lleva bolsa a la compra y pide una al pagar porque el tercer producto
+más vendido son las bolsas de plástico con 50 unidades vendidas. 
 
-2.Si consideramos la categoría de FRUTAS Y VERDURAS. Cuáles son los 5 productos 
+Para observar mejor los datos anteriores, representamos la información anterior en
+un gráfico de barras
+
+```{r}
+
+library(ggplot2)
+
+# Creamos la gráfica
+ggplot(todos_productos_unidades, aes(x = reorder(descripcion, -unidades_vendidas), 
+                                     y = unidades_vendidas, 
+                                     fill = descripcion)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Top 5 productos más vendidos por unidades",
+       x = "Producto",
+       y = "Unidades vendidas") +
+  theme_minimal() +
+  theme(legend.position = "none") +  # Oculta la leyenda (porque los colores ya están en el eje x)
+  scale_fill_brewer(palette = "Set2")  # Paleta de colores agradable
+
+
+```
+
+En la tabla vemos de forma clara los 5 productos más vendidos y la diferencia entre 
+las cantidades vendidas de cada uno.
+
+### Pregunta 2
+
+Si consideramos la categoría de FRUTAS Y VERDURAS. Cuáles son los 5 productos 
 más vendidos ? ¿Cuántos kilos se han vendido de cada uno de estos productos?
+
+Como en el apartado anterior hemos creado una lista con todos los productos del 
+dataframe, en esta cuestión la filtramos para encontrar aquellos productos que 
+pertenecen a la categoria FRUTAS Y VERDURAS. Esto lo hacemos gracias a que si mostramos
+el dataframe con todos los productos vemos que los que forman parte de la categoria 
+FRUTAS Y VERDURAS su nombre comienza por un 1 y después de su nombre aparece entre 
+paréntesis el precio por kilo. Tras fijarnos en esto filtramos la lista con los 
+nombres de todos los productos.
+
+Después extaremos del nombre del producto el nombre del producto y la cantidad de 
+kilos vendidos, para luego agrupar los productos por nombre, contar cuantas veces aparecen 
+y sumar los kilos totales comprados. 
 
 ```{r}
 
@@ -576,25 +690,82 @@ frutas_verduras <- frutas_verduras %>%
 frutas_verduras_mas_vendidas <- frutas_verduras %>%
   mutate(producto = str_remove(str_extract(descripcion, "^[^\\(]+"), "^1 ")) %>%
   group_by(producto) %>%
+<<<<<<< HEAD
   summarise(
     veces_comprado = n(),                    
     kilos_totales = sum(kilos_vendidos))  %>%
   arrange(desc(kilos_totales)) %>%
   head(5)
+=======
+  summarise(kilos_totales = sum(kilos_vendidos, na.rm = TRUE),
+    veces_comprado = n()) 
+
+```
+
+Por último, ordenamos los datos obtenidos de manera descendente por el número de veces 
+que se ha comprado el producto, es decir, del que más veces se ha vendido al que menos
+veces se ha vendido. Después, seleccionamos las 5 primeras filas y las mostramos para 
+los 5 productos de FRUTA Y VERDURA más vendidos. 
+
+```{r}
+
+#Odenamos las frutas y verduras y cogemos las cinco primeras cinco filas
+frutas_verduras_mas_vendidas <- frutas_verduras_mas_vendidas %>%
+  arrange(desc(veces_comprado)) %>%  #Ordenamos de mayor a menor
+  head(5) #Elegimos las dos primeras
+>>>>>>> 77110e4a2734bc404a722533a277bb885b5c2950
 
 # Ver los resultados
 print(frutas_verduras_mas_vendidas)
 
-
 ```
+Como hablamos de peso, aunque queremos saber los cinco productos más vendidos, nos interesa 
+conocer las veces que se vende ese producto, porque el que se vende más peso no significa que 
+sea el mñas comprado, ya que se podría dar el caso que compro una unidad de un producto muy pesado, 
+pero que compro muchas unidades de un producto muy poco pesado, el más comprado sería el de poco peso. 
 
-3.Si consideramos la categoría de PESCADO. Cuáles son los 5 productos más vendidos?
-¿Cuántos kilos se han vendido de cada uno de estos productos ?
+Para observar mejor los datos obtenidos en este ejercicio representaremos los datos 
+en una gráfica junto con la cantidad de kilos que se han comprado.
 
 ```{r}
 
-# Filtramos los productos que pertenecen a la categoria pescado de la lista de todos
-#los productos
+ggplot(frutas_verduras_mas_vendidas, aes(x = reorder(producto, -veces_comprado), 
+                                         y = veces_comprado, 
+                                         fill = producto)) +
+  geom_bar(stat = "identity") +
+  geom_text(aes(label = round(veces_comprado, 2)), vjust = -0.5, size = 4) +
+  labs(title = "Top 5 frutas y verduras más vendidas (por kilos)",
+       x = "Producto",
+       y = "Veces comprado") +
+  theme_minimal() +
+  theme(legend.position = "none",
+        axis.text.x = element_text(angle = 45, hjust = 1)) +
+  scale_fill_brewer(palette = "Set3")
+
+```
+En la tabla vemos que el producto de la categoria FRUTAS Y VERDURAS más comprado 
+con diferencia es el plátano.
+
+### Pregunta 3
+
+Si consideramos la categoría de PESCADO. Cuáles son los 5 productos más vendidos?
+¿Cuántos kilos se han vendido de cada uno de estos productos ?
+
+Como en el apartado anterior hemos creado una lista con todos los productos del 
+dataframe, en esta cuestión la filtramos para encontrar aquellos productos que 
+pertenecen a la categoria PESCADO. Esto lo hacemos gracias a que si mostramos
+el dataframe con todos los productos vemos que los que forman parte de la categoria 
+PESCADO después de su nombre aparece entre paréntesis el precio por kilo y no llevan un 1 delante 
+como los productos del ejercicio anterior. Tras fijarnos en esto filtramos la lista con los 
+nombres de todos los productos.
+
+Después extaremos del nombre del producto el nombre del producto y la cantidad de 
+kilos vendidos, para luego agrupar los productos por nombre, contar cuantas veces aparecen 
+y sumar los kilos totales comprados. 
+
+```{r}
+
+# Filtramos los productos que pertenecen a la categoria pescado 
 pescado <- todos_los_productos %>%
   filter(str_detect(descripcion, "^((?!^1).)*\\(.*kg.*\\)"))
 
@@ -605,20 +776,69 @@ pescado <- pescado %>%
 # Agrupamos por nombre del producto y sumamos los kilos vendidos
 pescados_mas_vendidos <- pescado %>%
   mutate(producto = str_extract(descripcion, "^[^\\(]+")) %>%
+<<<<<<< HEAD
   group_by(producto) %>%
   summarise(
     veces_comprado = n(),
     kilos_totales = sum(kilos_vendidos)) %>%
   arrange(desc(kilos_totales)) %>%
   head(5)
+=======
+  group_by(producto) %>% 
+  summarise(kilos_totales = sum(kilos_vendidos, na.rm = TRUE),
+    veces_comprado = n())  
+
+```
+
+Por último, ordenamos los datos obtenidos de manera descendente por el número de veces 
+que se ha comprado el producto, es decir, del que más veces se ha vendido al que menos
+veces se ha vendido. Después, seleccionamos las 5 primeras filas y las mostramos para 
+los 5 productos de la categoria PESCADO más vendidos. 
+
+```{r}
+
+pescados_mas_vendidos <- pescados_mas_vendidos %>%
+  arrange(desc(kilos_totales)) %>% #Ordenamos de mayor a menor
+  head(5) #Cogemos las cinco primeras filas 
+>>>>>>> 77110e4a2734bc404a722533a277bb885b5c2950
 
 # Mostramos los 5 pescados más vendidos junto a los kilos totales vendidos
 print(pescados_mas_vendidos)
 
 ```
 
-4. Muestra mediante un gráfico de líneas como ha variado el precio por kilo de las 
+Como hablamos de peso, aunque queremos saber los cinco productos más vendidos, nos interesa 
+conocer las veces que se vende ese producto, porque el que se vende más peso no significa que 
+sea el mñas comprado, ya que se podría dar el caso que compro una unidad de un producto muy pesado, 
+pero que compro muchas unidades de un producto muy poco pesado, el más comprado sería el de poco peso. 
+
+Para observar mejor los datos obtenidos en este ejercicio representaremos los datos 
+en una gráfica junto con la cantidad de kilos que se han comprado.
+
+```{r}
+
+ggplot(pescados_mas_vendidos, aes(x = reorder(producto, -veces_comprado), 
+                                         y = veces_comprado, 
+                                         fill = producto)) +
+  geom_bar(stat = "identity") +
+  geom_text(aes(label = round(veces_comprado, 2)), vjust = -0.5, size = 4) +
+  labs(title = "Top 5 frutas y verduras más vendidas (por kilos)",
+       x = "Producto",
+       y = "Veces comprado") +
+  theme_minimal() +
+  theme(legend.position = "none",
+        axis.text.x = element_text(angle = 45, hjust = 1)) +
+  scale_fill_brewer(palette = "Set3")
+
+```
+### Pregunta 4
+
+Muestra mediante un gráfico de líneas como ha variado el precio por kilo de las 
 bananas y los plátanos en los tickets disponibles, a lo largo del tiempo.
+
+Para este ejercicio vaolvemos a crear la lista con todos los proyectos junto a su 
+fecha de compra, porque tenemos que estudiar la evolución de los precios con el tiempo.
+Después filtramos los productos para seleccionar solo los plátanos y bananas. 
 
 ```{r}
 
@@ -639,7 +859,12 @@ todos_los_productos <- bind_rows(lapply(todos_los_tickets, function(ticket) {
 # Filtramos las bananas y los plátanos
 frutas <- todos_los_productos %>% filter(str_detect(tolower(descripcion), "banana|platano")) 
 
+```
+ 
+Después, seleccionamos y guardamos el precio del kilo del los platanos y bananas
+del nombre del producto en cada fecha. Además de comprobar que la fecha está en formato correcto. 
 
+```{r}
 #Seleccionamos el precio del kilo que se encuentra al lado del nombre del producto
 frutas <- frutas %>% 
   mutate(precio_kilo = as.numeric(str_extract(descripcion, "(?<=a )\\d+\\.\\d{2}"))) 
@@ -654,6 +879,13 @@ frutas <- frutas %>%
     str_detect(tolower(descripcion), "platano") ~ "Platano"
   ))
 
+```
+
+Por último, como nos pide el enunciado creamos un gráfico de líneas para observar 
+la evolución del precio del kilo de la banana y el platano. 
+
+```{r}
+
 # Creamos la gráfica con la evolución del precio por kilo
 ggplot(frutas, aes(x = fecha, y = precio_kilo, color = tipo)) +
   geom_line() +
@@ -666,6 +898,10 @@ ggplot(frutas, aes(x = fecha, y = precio_kilo, color = tipo)) +
   theme_minimal()
 
 ```
+En la gráfica, observamos que el precio del plátano es bastante irregular y que tuvo 
+una crecida muy grande en verano del 2024. En cambio, la banana tiene un precio muy regular 
+excepto a finales de 2025 que tuvo una pequeña bajada. 
+
 
 5. ¿ Cuál es la procedencia de los tickets ?¿ Qué ciudad/ pueblo tiene un mayor número de tickets ?
 ```{r}
@@ -753,7 +989,6 @@ print(tickets_por_direccion)
 direccion_top
 ```
 La tienda (calle) con mayor número de tickets es: C/ QUART 120 con 51 tickets.
->>>>>>> e0d38cec7134a564885ae4e842a99a90ec1d6d32
 
 3.  ¿En qué horario (mañana o tarde) se hacen las compras más caras?
 
@@ -883,7 +1118,7 @@ ggplot(tickets_por_tramo, aes(x = tramo_horario, y = cantidad_tickets, fill = tr
   labs(title = "Comparación de tickets emitidos en tramos horarios",
        x = "Tramo horario",
        y = "Cantidad de tickets") +
-  scale_fill_manual(values = c("skyblue", "salmon")) +  #
+  scale_fill_manual(values = c("skyblue", "salmon")) +
   theme_minimal()  
 
 
@@ -954,10 +1189,6 @@ ggplot(productos_queso_agrupado, aes(x = reorder(descripcion, cantidad_total), y
 ```
 Podemos ver que el total de quesos comprados en estos ticket es de 227.
 
-
-
-<<<<<<< HEAD
-=======
 
 11. ¿Cuál es la mayor cantidad pagada de impuestos y en qué localización se ha producido?
 ```{r}
@@ -1057,5 +1288,3 @@ ggplot(ventas_por_dia, aes(x = factor(dia_semana, levels = c("lunes", "martes", 
 ```
 Sí que se observan picos durante la semana. En el gráfico podemos ver cómo el sábado es el día con mayor número de compras, esto sugiere que las pernonas pueden tender más a realizar compras los sábados para abastecerse para la semana siguiente, a esto lo sigue el lunes. En cambio, el día con menor número de compras, a excepción del domingo que suelen estar cerrados los supermecados, es el jueves.
  
- 
->>>>>>> e0d38cec7134a564885ae4e842a99a90ec1d6d32
