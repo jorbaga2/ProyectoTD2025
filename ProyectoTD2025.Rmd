@@ -714,7 +714,6 @@ los 5 productos de FRUTA Y VERDURA más vendidos.
 frutas_verduras_mas_vendidas <- frutas_verduras_mas_vendidas %>%
   arrange(desc(veces_comprado)) %>%  #Ordenamos de mayor a menor
   head(5) #Elegimos las dos primeras
->>>>>>> 77110e4a2734bc404a722533a277bb885b5c2950
 
 # Ver los resultados
 print(frutas_verduras_mas_vendidas)
