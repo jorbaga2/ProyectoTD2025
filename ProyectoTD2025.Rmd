@@ -776,17 +776,9 @@ pescado <- pescado %>%
 # Agrupamos por nombre del producto y sumamos los kilos vendidos
 pescados_mas_vendidos <- pescado %>%
   mutate(producto = str_extract(descripcion, "^[^\\(]+")) %>%
-<<<<<<< HEAD
-  group_by(producto) %>%
-  summarise(
-    veces_comprado = n(),
-    kilos_totales = sum(kilos_vendidos)) %>%
-  arrange(desc(kilos_totales)) %>%
-  head(5)
-=======
   group_by(producto) %>% 
   summarise(kilos_totales = sum(kilos_vendidos, na.rm = TRUE),
-    veces_comprado = n())  
+    veces_comprado = n())   
 
 ```
 
@@ -800,7 +792,6 @@ los 5 productos de la categoria PESCADO más vendidos.
 pescados_mas_vendidos <- pescados_mas_vendidos %>%
   arrange(desc(kilos_totales)) %>% #Ordenamos de mayor a menor
   head(5) #Cogemos las cinco primeras filas 
->>>>>>> 77110e4a2734bc404a722533a277bb885b5c2950
 
 # Mostramos los 5 pescados más vendidos junto a los kilos totales vendidos
 print(pescados_mas_vendidos)
@@ -831,6 +822,7 @@ ggplot(pescados_mas_vendidos, aes(x = reorder(producto, -veces_comprado),
   scale_fill_brewer(palette = "Set3")
 
 ```
+
 ### Pregunta 4
 
 Muestra mediante un gráfico de líneas como ha variado el precio por kilo de las 
@@ -865,6 +857,7 @@ Después, seleccionamos y guardamos el precio del kilo del los platanos y banana
 del nombre del producto en cada fecha. Además de comprobar que la fecha está en formato correcto. 
 
 ```{r}
+
 #Seleccionamos el precio del kilo que se encuentra al lado del nombre del producto
 frutas <- frutas %>% 
   mutate(precio_kilo = as.numeric(str_extract(descripcion, "(?<=a )\\d+\\.\\d{2}"))) 
@@ -898,30 +891,82 @@ ggplot(frutas, aes(x = fecha, y = precio_kilo, color = tipo)) +
   theme_minimal()
 
 ```
+
 En la gráfica, observamos que el precio del plátano es bastante irregular y que tuvo 
 una crecida muy grande en verano del 2024. En cambio, la banana tiene un precio muy regular 
 excepto a finales de 2025 que tuvo una pequeña bajada. 
 
 
-5. ¿ Cuál es la procedencia de los tickets ?¿ Qué ciudad/ pueblo tiene un mayor número de tickets ?
+### Pregunta 5
+
+¿ Cuál es la procedencia de los tickets ?¿ Qué ciudad/ pueblo tiene un mayor número de tickets ?
+
+Queremos ver cual es la procedencia de los tickets, es decir, la localidad donde 
+se encuentra el Mercadona donde se ha hecho la compra. Para ello, realizamos una función 
+donde seleccionamos del dataframe agrupadas por nombre todas las localidades 
+donde se ha realizado una compra y después hacemos un recuento de la cantidad de 
+veces que aparece cada localidad. 
+
 ```{r}
+
 tickets_por_localidad <- df_tickets %>%
   group_by(localidad) %>%
-  summarise(num_tickets = n()) %>%
+  summarise(num_tickets = n()) 
+
+```
+
+Ahora para ver cual es la localidad donde se han registrado un mayor número de
+tickets ordenamos los valores recogidas anteriormente de mayor a menor.
+
+```{r}
+
+tickets_por_localidad <- tickets_por_localidad %>%
   arrange(desc(num_tickets))
 
+```
+
+Ahora creamos una tabla mostrando todas las localidades donde se ha realizao una 
+compra junto a la cantidad de compras que se ha realizdo en esa localidad. También 
+mostramos cual es la localidad de donde proceden más tickets.
+
+```{r}
 
 kable(tickets_por_localidad, caption = "Número de tickets por ciudad/pueblo")
 
-localidad_top <- tickets_por_localidad %>% slice(1)
+localidad_top <- tickets_por_localidad %>% slice(1)  #Seleccionamos la localidad con más tickets 
 cat("La ciudad/pueblo con mayor número de tickets es:", localidad_top$localidad, 
     "con", localidad_top$num_tickets, "tickets.\n")
 
-localidad_top
+localidad_top #mostramos la localidad con más tickets
+
+```
+
+Para ver los datos recogidos de manera más clara creamos un gráfico de barras que 
+muestre la información. 
+
+```{r}
+
+library(ggplot2)
+
+graficar_tickets_por_localidad <- function(data) {
+  ggplot(data, aes(x = reorder(localidad, -num_tickets), y = num_tickets)) +
+    geom_bar(stat = "identity", fill = "steelblue") +
+    labs(
+      title = "Número de tickets por ciudad/pueblo",
+      x = "Localidad",
+      y = "Número de tickets"
+    ) +
+    theme_minimal() +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1))
+}
+
+# Usar la función con tus datos:
+graficar_tickets_por_localidad(tickets_por_localidad)
 
 
 ```
-Podemos ver que la ciudad/pueblo que mas tickets tiene es Valencia con 121, y le siguen Alboraya y Alcoy. Tiene sentido, ya que es la capital y la localidad con mas habitantes de la provincia de Valencia y de la CV, y por tanto es mas probable que haya alumnos con tickets de Valencia.
+
+Podemos ver que la ciudad/pueblo que mas tickets tiene es Valencia con 121, y le siguen Alboraya y Alcoy. Tiene sentido, ya que Valencia es la capital y la localidad con mas habitantes de la provincia de Valencia y de la CV, y por tanto es mas probable que haya más alumnos con tickets de Valencia.
 
 6.- Muestra mediante un diagrama el número de tickets recogidos cada día de las semana. ¿Si tuvieses que cerrar un día entre semana qué día lo harías ?
 ```{r}
