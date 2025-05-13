@@ -1460,7 +1460,13 @@ ggplot(iva_por_localidad, aes(x = localidad, y = total_IVA, fill = localidad)) +
 Vemos que el la ciudad de Valencia es donde más impuestos se ha pagado. Tiene sentido ya que es
 donde más compras se han realizado. 
  
-12. ¿Cuál es el producto más caro?
+### Pregunta 10
+
+¿Cuál es el producto más caro?
+
+Queremos ver cual es el producto más caro comprado registrado en nuestros tickets. 
+Para ello, agrupamos los productos iguales y después comparamos sus precios.
+
 ```{r}
 
 # Unimos todos los productos de los tickets en un solo dataframe
@@ -1475,6 +1481,11 @@ producto_mas_caro <- df_productos %>% arrange(desc(importe)) %>% head(1)
 cat("El producto más caro es:", producto_mas_caro$descripcion, 
     "con un importe de:", producto_mas_caro$importe, "€\n")
 
+```
+
+Mostramos en una tabla los productos más caros. 
+
+```{r}
 
 # Vamos a representarlo en un gráfico
 # Seleccionamos los 4 productos más caros
@@ -1490,7 +1501,7 @@ ggplot(top_productos, aes(x = reorder(descripcion, importe), y = importe, fill =
   scale_fill_brewer(palette = "Set3")
 
 ```
-
+Vemos que el producto más caro es el MEDIANO.
  
 13. ¿Qué días presentan mayor volumen de ventas? ¿Se observan picos específicos durante la semana?
 ```{r}
