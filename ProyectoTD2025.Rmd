@@ -412,7 +412,8 @@ if (length(linea_parking) > 0) {
 
 ```
 
-Creamos una función para procesar todos los tickets.
+
+A continuación, se define la función procesar_tickets() para automatizar la lectura y extracción de datos de múltiples tickets PDF ubicados en la carpeta data. Para cada archivo, se leen sus líneas de texto y se verifica si pertenece a Mercadona con es_mercadona(). Si es válido, se procesan sus datos con procesar_lineas() y se almacenan en una lista junto con el nombre del archivo. La función maneja errores durante la lectura y filtra tickets no válidos, devolviendo solo los correctamente procesados.
 
 ```{r}
 #Función para procesar múltiples tickets PDF.
