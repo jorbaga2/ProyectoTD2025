@@ -1014,34 +1014,6 @@ ya que es el dia que menos compras se registran.
 
 Tras analizar los datos obtenidos y resolver las preguntas anteriores nos hemos planteado las siguientes: 
 
-1. ¿Cuáles son los 5 productos más comprados? ¿Y cuántas veces ha sido comprado el qué más?
-```{r}
-top10_productos <- todos_los_productos %>%
-  group_by(descripcion) %>%
-  summarise(total_comprado = sum(cantidad, na.rm = TRUE)) %>%
-  arrange(desc(total_comprado)) %>%
-  slice_head(n = 10)
-
-
-print(top10_productos)
-
-top5_productos <- todos_los_productos %>%
-  group_by(descripcion) %>%
-  summarise(total_comprado = sum(cantidad, na.rm = TRUE)) %>%
-  arrange(desc(total_comprado)) %>%
-  slice_head(n = 5)
-
-
-print(top5_productos)
-
-producto_mas_comprado <- top5_productos %>% slice(1)
-cat("El producto más comprado es:", producto_mas_comprado$descripcion, 
-    "con", producto_mas_comprado$total_comprado, "unidades compradas.\n")
-```
-Los 5 poductos mas vendidos son el Atun Claro Oliva, el Queso Lonchas Cabra, la BOLSA PLASTICO,	
-la LECHE DESNAT. CALCIO y el YOGUR COCO. El que mas, que es el ATUN CLARO OLIVA, se ha comprado 62 veces.
-
-
 ### Pregunta 1 
 
 ¿A qué tienda (calle ...) pertenecen la mayor parte de los tickets? 
@@ -1203,20 +1175,6 @@ cat("Porcentaje sobre el total:", compras_emergencia$porcentaje, "%", "\n")
 Vemos que tan solo 31 tickets son de emergencia y representan un 10,9% del total. 
 Por tanto, podemos decir que entre nuestros tickets no se encuentran demasiados
 de compras de emergencia. 
-
-6.  ¿Qué día de la semana es el que menos compras registra?
-
-```{r}
-df_tickets<- df_tickets %>% filter(!is.na(fecha)) %>% mutate(dia_semana = format(fecha, "%A"))
-
-compras_por_dia<-df_tickets %>% group_by(dia_semana) %>% summarise(n_compras = n()) %>% arrange(n_compras)
-
-kable(compras_por_dia, caption = "Compras por día de la semana")
-
-
-```
-
-Obtenemos que el día de la semana en el que menos se compra es el Domingo con solamente 2 compras.
 
 ### Pregunta 5
 
@@ -1407,7 +1365,7 @@ más comprado es el QUESO LOCHAS CABRA.
 
 ### Pregunta 9
 
-11. ¿Cuál es la mayor cantidad pagada de impuestos y en qué localización se ha producido?
+¿Cuál es la mayor cantidad pagada de impuestos y en qué localización se ha producido?
 
 Queremos ver cual es la mayor canitdad de impuestos pagada. Realmente, sabemos que este
 dato se encontrará entre las compras grandes pero no tiene porque ser la mayor, ya que 
@@ -1436,6 +1394,7 @@ if (!is.na(indice_max_iva) && indice_max_iva > 0) {
 }
 
 ```
+
 Vemos la cantidad de impuestos pagada en cada una de las localidades en una gráfica.
 
 ```{r}
@@ -1503,29 +1462,8 @@ ggplot(top_productos, aes(x = reorder(descripcion, importe), y = importe, fill =
 ```
 Vemos que el producto más caro es el MEDIANO.
  
-13. ¿Qué días presentan mayor volumen de ventas? ¿Se observan picos específicos durante la semana?
-```{r}
+#Resumen
 
-# Comprobamos que la columna fecha está en formato de fecha
-df_tickets <- df_tickets %>%
-  filter(!is.na(fecha)) %>%
-  mutate(dia_semana = weekdays(fecha, abbreviate = FALSE)) 
-
-# Contamos las compras por día 
-ventas_por_dia <- df_tickets %>%
-  group_by(dia_semana) %>%
-  summarise(n_compras = n()) %>%
-  arrange(desc(n_compras)) # Ordenamos de mayor a menor volumen de ventas
-
-# Resultados
-kable(ventas_por_dia, caption = "Número de compras por día de la semana")
-
-
-# Creamos un gráfico de barras por número de compras
-ggplot(ventas_por_dia, aes(x = factor(dia_semana, levels = c("lunes", "martes", "miércoles", "jueves", "viernes", "sábado", "domingo")), y = n_compras, fill = dia_semana)) +
-  geom_bar(stat = "identity") +
-  labs(title = "Número de compras por día de la semana", x = "Día de la semana", y = "Número de compras") 
-
-```
-Sí que se observan picos durante la semana. En el gráfico podemos ver cómo el sábado es el día con mayor número de compras, esto sugiere que las pernonas pueden tender más a realizar compras los sábados para abastecerse para la semana siguiente, a esto lo sigue el lunes. En cambio, el día con menor número de compras, a excepción del domingo que suelen estar cerrados los supermecados, es el jueves.
+Tras la creación de la función, la lectura de los tickets de compra del Mercadona en formato PDF y el análisis de
+los datos obtenidos podemos decir que el día de la semana en que más se compra es el sábado y el que menos el jueves (contando que el domingo está cerrado), que el producto más comprado en unidades es el atun en lata y la fruta más comprada el plátano y que la localidad donde más se ha comprado es en Valencia.
  
