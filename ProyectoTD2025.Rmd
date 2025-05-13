@@ -4,15 +4,15 @@ author: Jorge Ballesteros García, Emma Almenar García, Miguel Angel Aloy Poved
   Larios Bea, Samuel Lozada Borrás, Iker Martínez Bravo
 date: "2025-04-07"
 output:
+  pdf_document:
+    toc: yes
+    toc_depth: 3
+    number_sections: no
   html_document:
     echo: yes
     number_sections: no
     theme: lumen
     toc: yes
-  pdf_document:
-    toc: yes
-    toc_depth: 3
-    number_sections: no
 ---
 
 ```{r setup, include=FALSE}
@@ -964,7 +964,6 @@ print(tickets_por_direccion)
 direccion_top
 ```
 La tienda (calle) con mayor número de tickets es: C/ QUART 120 con 51 tickets.
->>>>>>> e0d38cec7134a564885ae4e842a99a90ec1d6d32
 
 3.  ¿En qué horario (mañana o tarde) se hacen las compras más caras?
 
@@ -1094,7 +1093,7 @@ ggplot(tickets_por_tramo, aes(x = tramo_horario, y = cantidad_tickets, fill = tr
   labs(title = "Comparación de tickets emitidos en tramos horarios",
        x = "Tramo horario",
        y = "Cantidad de tickets") +
-  scale_fill_manual(values = c("skyblue", "salmon")) +  #
+  scale_fill_manual(values = c("skyblue", "salmon")) +
   theme_minimal()  
 
 
@@ -1165,10 +1164,6 @@ ggplot(productos_queso_agrupado, aes(x = reorder(descripcion, cantidad_total), y
 ```
 Podemos ver que el total de quesos comprados en estos ticket es de 227.
 
-
-
-<<<<<<< HEAD
-=======
 
 11. ¿Cuál es la mayor cantidad pagada de impuestos y en qué localización se ha producido?
 ```{r}
@@ -1268,5 +1263,3 @@ ggplot(ventas_por_dia, aes(x = factor(dia_semana, levels = c("lunes", "martes", 
 ```
 Sí que se observan picos durante la semana. En el gráfico podemos ver cómo el sábado es el día con mayor número de compras, esto sugiere que las pernonas pueden tender más a realizar compras los sábados para abastecerse para la semana siguiente, a esto lo sigue el lunes. En cambio, el día con menor número de compras, a excepción del domingo que suelen estar cerrados los supermecados, es el jueves.
  
- 
->>>>>>> e0d38cec7134a564885ae4e842a99a90ec1d6d32
